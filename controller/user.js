@@ -4,8 +4,9 @@ const jwt = require('jsonwebtoken')
 require('dotenv').config()
 exports.register = async (req, res) => {
     try {
-      const { email, password } = req.body;
-  
+      const { email, password ,name} = req.body;
+     
+
       // Check if user already exists
       const existingUser = await User.findOne({ where: { email } });
       if (existingUser) {
@@ -14,19 +15,21 @@ exports.register = async (req, res) => {
   
       // Hash the password
       const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
+      const hashedPassword = await bcrypt.hash(password,salt)
+      console.log(hashedPassword,);
+      
   
       // Create the new user
       const newUser = await User.create({
         email,
-        password: hashedPassword 
-        // ... other fields as needed
+        password: hashedPassword,
+        name
       });
   
       // Generate JWT token (make sure process.env.JWT_SECRET is set)
-      const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET, { expiresIn: '1h' }); 
+      const token = jwt.sign({ userId: newUser.id,name:name}, process.env.JWT_SECRET, { expiresIn: '1h' }); 
   
-      res.status(201).json({ token }); // Send the token in the response
+      res.status(201).json({ accessToken:token }); // Send the token in the response
     } catch (err) {
       console.error(err); // Log the error for debugging
       res.status(500).json({ error: 'Unable to register user' }); 
@@ -51,10 +54,10 @@ exports.register = async (req, res) => {
       }
   
       // Generate JWT token
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn:   
+      const token = jwt.sign({ userId: user.id,name:user.name }, process.env.JWT_SECRET, { expiresIn:   
    '1h' }); 
   
-      res.json({ token });
+      res.json({ accessToken:token  });
     } catch (err) {
       console.error(err);   
   
