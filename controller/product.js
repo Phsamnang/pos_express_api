@@ -55,7 +55,7 @@ exports.getProductById = async (req, res) => {
     const categoryId=req.params.categoryId;
     const products=await Product.findAll({
         where:{categoryId:categoryId},
-        include:Cat
+        include:Category
     })
    
     res.status(200).json(products)
