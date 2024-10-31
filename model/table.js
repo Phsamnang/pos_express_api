@@ -8,7 +8,7 @@ const Table = database.define('Table', {
       primaryKey: true
     },
     tableName: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
       unique: true 
     },

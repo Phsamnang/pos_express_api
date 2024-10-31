@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const database = require("../config/database");
-
+const {Table}=require('./index')
 const Sale = database.define('Sale', {
     id: {
       type: DataTypes.INTEGER,
