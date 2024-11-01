@@ -10,3 +10,13 @@ exports.createCategory=async(req,res)=>{
         res.status(500).json({ error: 'Unable to create product' }); 
       }
 }
+
+exports.getAllCategories=async(req,res)=>{
+    try{
+       const category=await Category.findAll()
+        res.status(201).json(category);
+    }catch (err) {
+        console.error(err); 
+        res.status(500).json({ error: 'Unable to create product' }); 
+      }
+}

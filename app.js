@@ -6,10 +6,19 @@ const productRouter=require('./router/product')
 const userRouter=require('./router/user');
 const tableRouter=require('./router/table')
 const saleRouter=require('./router/sale')
+const cors=require('cors')
 const authenticate = require('./middleware/authenticate');
 
 const app =express();
 
+const allowAllOrigins = (req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*'); 
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');   
+  
+    next();
+  };
+
+app.use(cors({allowAllOrigins}))
 app.use(bodyParser.json())
 app.use(authenticate)
 app.use('/api/v1',categoryRouter)
