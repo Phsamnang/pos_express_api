@@ -26,7 +26,6 @@ const SaleItem = database.define('SaleItem', {
     },
     quantity: {
       type: DataTypes.INTEGER,   
-  
       allowNull: false
     },
     priceAtSale: {
