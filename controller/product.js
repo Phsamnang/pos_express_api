@@ -64,3 +64,26 @@ exports.getProductById = async (req, res) => {
     res.status(500).json({ error: 'Unable to retrieve products by category' });
   }
   }
+
+  exports.getAllProduct=async(req,res)=>{
+
+    try{
+      const products=await Product.findAll(
+      {
+        include:Category,
+    
+      }
+      )
+  const customRespone=products.map(p=>({
+    id:p.id,
+    name:p.name,
+    price:p.price,
+    categoryName:p.Category.name
+  }))
+
+      res.status(200).json(customRespone)
+
+    }catch(err){
+      res.status(500).json(err)
+    }
+  }
