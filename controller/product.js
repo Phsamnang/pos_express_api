@@ -1,17 +1,24 @@
 const{Product,Category} =require('../model/index')
 
-exports.createProduct=async(req,res)=>{
-    try{
-        const{name,description,price,categoryId}=req.body;
+exports.createProduct = async (req, res) => {
+  try {
+    const { name, description, price, categoryId } = req.body;
 
-        const product=await Product.create({name,description,price,categoryId});
-        res.status(201).json(product);
-    
-    }catch (err) {
-        console.error(err); 
-        res.status(500).json({ error: 'Unable to create product' }); 
-      }
-}
+    // Check if a product with the same name already exists
+    const existingProduct = await Product.findOne({ where: { name } });
+
+    if (existingProduct) {
+      return res.status(400).json({ error: 'Product with this name already exists' });
+    }
+
+    const product = await Product.create({ name, description, price, categoryId });
+    res.status(201).json(product);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create product' });
+  }
+};
 exports.getProductById = async (req, res) => {
     try {
       const productId = req.params.id;

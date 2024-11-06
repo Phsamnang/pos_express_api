@@ -6,9 +6,9 @@ const User = database.define('User', {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,   
-      validate: {
-        isEmail: true 
-      }
+      // validate: {
+      //   isEmail: true 
+      // }
     },
      name: {
       type: DataTypes.STRING,
@@ -18,6 +18,14 @@ const User = database.define('User', {
       type: DataTypes.STRING,
       allowNull: false
     }
+   
   });
-  
+  (async () => {
+    try {
+      await database.sync({ alter: true }); 
+      console.log('Migration successful!');
+    } catch (error) {
+      console.error('Error migrating database:', error);
+    }
+  })(); 
   module.exports = User;
