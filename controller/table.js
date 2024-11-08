@@ -1,5 +1,5 @@
 const {Table}=require('../model/index')
-exports.createTable=async=async (req,res)=>{
+exports.createTable=async (req,res)=>{
    try{
       const { name } = req.body;
       const existingTable = await Table.findOne({ where: { tableName: name } });
@@ -15,3 +15,13 @@ exports.createTable=async=async (req,res)=>{
    }
    
 } 
+
+exports.getAllTable=async(req,res)=>{
+   try {
+     const table = await Table.findAll();
+     res.status(200).json(table);
+   } catch (err) {
+     console.error(err);
+     res.status(500).json({ error: err});
+   }
+}
