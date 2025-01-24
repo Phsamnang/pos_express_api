@@ -1,4 +1,8 @@
+const Attendance = require("./attendance");
 const Category = require("./category");
+const Employee = require("./employee");
+const MenusPrice = require("./menuprice");
+const Menus = require("./menus");
 const Product = require("./product");
 const Sale = require("./sale");
 const SaleItem = require("./saleItem");
@@ -15,6 +19,12 @@ Product.hasMany(SaleItem,{foreignKey:'productId'})
 SaleItem.belongsTo(Product,{foreignKey:'productId'})
 TableType.hasMany(Table,{foreignKey:'tableTypeId'})
 Table.belongsTo(TableType, { foreignKey: "tableTypeId" });
+MenusPrice.belongsTo(TableType, { foreignKey: "tableTypeId" });
+MenusPrice.belongsTo(Menus,{foreignKey:"meneuId"})
+Menus.hasMany(MenusPrice)
+Table.hasMany(MenusPrice)
+Employee.hasMany(Attendance, { foreignKey: "employeeId" });
+Attendance.belongsTo(Employee, { foreignKey: "employeeId" });
 
 module.exports={
     Category,
@@ -22,5 +32,9 @@ module.exports={
     Table,
     Sale,
     SaleItem,
-    TableType
+    TableType,
+    MenusPrice,
+    Menus,
+    Employee,
+    Attendance
 }
