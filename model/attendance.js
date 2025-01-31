@@ -1,18 +1,14 @@
 const { DataTypes } = require("sequelize");
 const database = require("../config/database");
+const Employee = require("./employee");
 
 const Attendance = database.define("Attendance", {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
   employeeId: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: Employee,
-      key: "employeeId",
+      key: 'id',
     },
   },
   date: {

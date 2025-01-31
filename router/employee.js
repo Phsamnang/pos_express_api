@@ -3,5 +3,6 @@ const express = require('express')
  const employeeController=require('../controller/employee')
 
  router.post('/employee',employeeController.createEmployee)
+ router.post('/employee/check',employeeController.checkAttendance)
 
  module.exports=router

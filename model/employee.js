@@ -2,11 +2,6 @@ const { DataTypes } = require("sequelize");
 const database = require("../config/database");
 
 const Employee = database.define("Employee", {
-  id: {
-    type: DataTypes.STRING,
-    primaryKey: true,
-    allowNull: false,
-  },
   firstName: {
     type: DataTypes.STRING,
     allowNull: true,
