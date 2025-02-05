@@ -9,6 +9,8 @@ const saleRouter=require('./router/sale')
 const employeeRouter=require('./router/employee')
 const cors=require('cors')
 const authenticate = require('./middleware/authenticate');
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require("swagger-ui-express");
 
 const app =express();
 
@@ -18,6 +20,23 @@ const allowAllOrigins = (req, res, next) => {
   
     next();
   };
+
+// Swagger Configuration
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.0', // or '2.0' for Swagger 2.0
+        info: {
+            title: 'POS API EXPRESS',
+            version: '1.0.0',
+            description: 'API documentation for your Express.js app',
+        },
+    },
+    apis: ['./routes/*.js', './router/*.js'], // Paths to your route files (important!)
+};
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); 
 
 app.use(cors({allowAllOrigins}))
 app.use(bodyParser.json())

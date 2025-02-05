@@ -1,15 +1,17 @@
 const { DataTypes } = require("sequelize");
 const database = require("../config/database");
-const Employee = require("./employee");
+const Employee = require("./employeeInfor");
+const User = require("./user");
 
 const Attendance = database.define("Attendance", {
-  employeeId: {
+  userId: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Employee,
-      key: 'id',
+      model: User,
+      key: "id",
     },
+    field: "emp_id",
   },
   date: {
     type: DataTypes.DATEONLY,
@@ -21,4 +23,4 @@ const Attendance = database.define("Attendance", {
   },
 });
 
-module.exports=Attendance
+module.exports = Attendance;

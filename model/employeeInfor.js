@@ -1,19 +1,15 @@
 const { DataTypes } = require("sequelize");
 const database = require("../config/database");
+const User = require("./user");
 
-const Employee = database.define("Employee", {
-  firstName: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  lastName: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    unique: true,
+const EmployeeInfo = database.define("emp_info", {
+  userId:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:User,
+        key:'id'
+      },
+      field:'emp_id'
   },
   phone: {
     type: DataTypes.STRING,
@@ -24,6 +20,8 @@ const Employee = database.define("Employee", {
   baseSalary: {
     type: DataTypes.DECIMAL(10, 2),
   },
+},{
+  underscored:false
 });
 
 module.exports=Employee
