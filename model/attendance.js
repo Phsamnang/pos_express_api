@@ -1,6 +1,5 @@
 const { DataTypes } = require("sequelize");
 const database = require("../config/database");
-const Employee = require("./employeeInfor");
 const User = require("./user");
 
 const Attendance = database.define("Attendance", {
@@ -13,6 +12,14 @@ const Attendance = database.define("Attendance", {
     },
     field: "emp_id",
   },
+  timeIn:{
+      type:DataTypes.TIME,
+      field:'time_in'
+  },
+  timeOut:{
+      type:DataTypes.TIME,
+      field:'time_out'
+  },
   date: {
     type: DataTypes.DATEONLY,
     allowNull: false,
@@ -21,6 +28,8 @@ const Attendance = database.define("Attendance", {
     type: DataTypes.ENUM("Present", "Absent", "Late", "Early Leave"),
     defaultValue: "Present",
   },
+},{
+  underscored:true
 });
 
 module.exports = Attendance;
