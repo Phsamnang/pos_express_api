@@ -1,5 +1,7 @@
+const employeeInfo = require("../models/employeeInfo");
 const Attendance = require("./attendance");
 const Category = require("./category");
+const EmployeeInfo = require("./employeeInfor");
 const Laon = require("./loan");
 const MenusPrice = require("./menuprice");
 const Menus = require("./menus");
@@ -29,10 +31,34 @@ User.belongsTo(Roles, { foreignKey: "role_id" });
 Roles.hasMany(User, { foreignKey: "role_id" });
 User.belongsTo(User, { as: "Parent", foreignKey: "p_id" });
 User.hasMany(User, { as: "Children", foreignKey: "p_id" });
-Attendance.belongsTo(User,{foreignKey:'emp_id'})
-User.hasMany(Attendance,{foreignKey:'emp_id'}),
-User.hasMany(Laon,{foreignKey:'emp_id'})
-Laon.belongsTo(User,{foreignKey:'emp_id'})
+Attendance.belongsTo(User, { foreignKey: "emp_id" });
+User.hasMany(Attendance, { foreignKey: "emp_id" }),
+  User.hasMany(Laon, { foreignKey: "emp_id" });
+Laon.belongsTo(User, { foreignKey: "emp_id" });
+User.hasOne(EmployeeInfo, { foreignKey: "emp_id" });
+EmployeeInfo.belongsTo(User, { foreignKey: "emp_id" });
+
+const clearColumnT = (worksheet) => {
+  if (!worksheet) return;
+
+  const startRow = 11;
+  // Get the used range to determine the last row
+  const usedRange = worksheet.getUsedRange();
+  if (!usedRange) return;
+
+  const lastRow = usedRange.lastRow?.number || startRow;
+
+  // Clear content in column T from row 11 onwards
+  for (let row = startRow; row <= lastRow; row++) {
+    const cell = worksheet.getCell(`T${row}`);
+    cell.value = null;
+    // Maintain center alignment if needed
+    cell.alignment = {
+      vertical: "middle",
+      horizontal: "center",
+    };
+  }
+};
 
 module.exports = {
   Category,

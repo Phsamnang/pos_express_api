@@ -24,4 +24,4 @@ const EmployeeInfo = database.define("emp_info", {
   underscored:false
 });
 
-module.exports=Employee
+module.exports = EmployeeInfo;
