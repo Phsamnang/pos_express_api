@@ -60,3 +60,35 @@ exports.register = async (req, res) => {
       res.status(500).json({ error: 'Unable to log in' });
     }
   };
+
+  exports.createEmployee = async (req, res) => {
+    try {
+
+      const{username,password,name}=req.body
+      
+     const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Get token from Bearer header
+
+    if (!token) {
+      return res.status(401).json({ error: 'Access denied. No token provided.' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+     const salt = await bcrypt.genSalt(10);
+     const hashedPassword = await bcrypt.hash(password, salt);  
+
+    const employee=await User.create({
+      username:username,
+      password:hashedPassword,
+      name:name,
+      p_id:req.user.userId
+    })
+
+    res.status(201).json({message:"Employee created successfully"})
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Unable to create employee' });
+  }
+}

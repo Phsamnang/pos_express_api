@@ -63,5 +63,6 @@ router.post('/register',userController.register);
  *         description: Server error
  */
 router.post('/login',userController.login);
+router.post('/create-employee',userController.createEmployee);
 
 module.exports=router
