@@ -1,5 +1,6 @@
 const Laon = require("../model/loan");
-
+const { Op } = require("sequelize");
+const User = require("../model/user");
 exports.createLoan = async (req, res) => {
     try {
         const {userId, amount} = req.body;
@@ -23,20 +24,25 @@ exports.getLoanByUserIdAndDateBetween = async (req,res)=>{
 
     try {
         const {userId,startDate,endDate} = req.params;
-
-       console.log(req.params);
-       
+        const user = await User.findByPk(userId);
         const loans = await Laon.findAll({
             where:{
                 userId,
                 loadDate:{
-                    [between]:[startDate,endDate]
+                    [Op.between]:[startDate,endDate]
                 }
             }
         })
-        res.status(200).json({loans})
+        res.status(200).json({
+            name:user.name,
+            loans:loans.map(l=>({
+                amt:l.amount,
+                laon_date:l.loadDate
+            }))
+        })
     } catch (error) {
-
+        console.log(error,"error");
+        
         res.status(500).json({error:"Failed to get loans by date"})
     }
 }   
