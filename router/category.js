@@ -1,6 +1,6 @@
-const express = require('express')
- const router=express.Router();
-const categoryController=require('../controller/category');
+const express = require("express");
+const router = express.Router();
+const categoryController = require("../controller/category");
 /**
  * @swagger
  * /users:
@@ -21,7 +21,7 @@ const categoryController=require('../controller/category');
  *                   name:
  *                     type: string
  */
- router.post('/category',categoryController.createCategory);
- router.get('/category',categoryController.getAllCategories);
+router.post("/category", categoryController.createCategory);
+router.get("/category", categoryController.getAllCategories);
 
- module.exports=router;
+module.exports = router;

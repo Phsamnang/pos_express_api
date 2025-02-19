@@ -1,6 +1,6 @@
-const userController=require('../controller/user')
-const express=require('express')
-const router =express.Router();
+const userController = require("../controller/user");
+const express = require("express");
+const router = express.Router();
 /**
  * @swagger
  * /users:
@@ -21,7 +21,7 @@ const router =express.Router();
  *                   name:
  *                     type: string
  */
-router.post('/register',userController.register);
+router.post("/register", userController.register);
 /**
  * @swagger
  * /login:
@@ -62,7 +62,7 @@ router.post('/register',userController.register);
  *       500:
  *         description: Server error
  */
-router.post('/login',userController.login);
-router.post('/create-employee',userController.createEmployee);
+router.post("/login", userController.login);
+router.post("/create-employee", userController.createEmployee);
 
-module.exports=router
+module.exports = router;

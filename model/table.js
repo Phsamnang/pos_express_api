@@ -26,5 +26,5 @@ const Table = database.define("Table", {
     },
   },
 });
-  
-  module.exports = Table;
+
+module.exports = Table;
