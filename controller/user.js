@@ -105,10 +105,10 @@ exports.getEmployee = async (req, res) => {
       where: {  // Fixed syntax: use colon instead of curly brace
         parentId: req.userId
       },
-      include:[{
+      include:{
         model:EmployeeInfo,
-        required:false
-      }]
+        attributes:['baseSalary','phone','hireDate']
+      }
     });
 
     if (!employees.length) {
@@ -118,10 +118,15 @@ exports.getEmployee = async (req, res) => {
       });
     }
 
-    return res.status(200).json({
-      success: true,
-      data: employees
-    });
+   
+ return res.status(200).json({
+   success: true,
+   data: employees.map((u) => ({
+     usr_nm: u.username,
+     nm: u.name,
+     user_info:EmployeeInfo.findByPk(u.id),
+   })),
+ });
 
   } catch (error) {
     console.error('Error fetching employees:', error);
@@ -132,3 +137,22 @@ exports.getEmployee = async (req, res) => {
     });
   }
 };
+
+
+const getEmployeeInf =async(userId)=>{
+   try{
+       const empInfo = await EmployeeInfo.findOne({
+         where: {
+           userId:userId
+         },
+       });    
+       console.log('====================================');
+       console.log(empInfo);
+       console.log('====================================');
+       return empInfo;
+   }catch(e){
+    console.log(e);
+   }
+}
+
+

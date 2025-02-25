@@ -33,7 +33,7 @@ User.belongsTo(User, { as: "Parent", foreignKey: "p_id" });
 User.hasMany(User, { as: "Children", foreignKey: "p_id" });
 Attendance.belongsTo(User, { foreignKey: "emp_id" });
 User.hasMany(Attendance, { foreignKey: "emp_id" }),
-  User.hasMany(Laon, { foreignKey: "emp_id" });
+User.hasMany(Laon, { foreignKey: "emp_id" });
 Laon.belongsTo(User, { foreignKey: "emp_id" });
 User.hasOne(EmployeeInfo, { foreignKey: "emp_id" });
 EmployeeInfo.belongsTo(User, { foreignKey: "emp_id" });
