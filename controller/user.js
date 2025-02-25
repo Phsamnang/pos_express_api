@@ -146,9 +146,6 @@ const getEmployeeInf =async(userId)=>{
            userId:userId
          },
        });    
-       console.log('====================================');
-       console.log(empInfo);
-       console.log('====================================');
        return empInfo;
    }catch(e){
     console.log(e);
