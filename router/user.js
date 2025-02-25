@@ -1,5 +1,6 @@
 const userController = require("../controller/user");
 const express = require("express");
+const authenticate = require("../middleware/authenticate");
 const router = express.Router();
 /**
  * @swagger
@@ -64,5 +65,6 @@ router.post("/register", userController.register);
  */
 router.post("/login", userController.login);
 router.post("/create-employee", userController.createEmployee);
+router.get('/employee',authenticate,userController.getEmployee);
 
 module.exports = router;

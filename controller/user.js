@@ -1,6 +1,8 @@
 const User = require("../model/user");
 const bcrypt = require("bcryptjs"); // Import bcrypt
 const jwt = require("jsonwebtoken");
+const employeeInfo = require("../models/employeeInfo");
+const EmployeeInfo = require("../model/employeeInfor");
 require("dotenv").config();
 exports.register = async (req, res) => {
   try {
@@ -94,5 +96,39 @@ exports.createEmployee = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Unable to create employee" });
+  }
+};
+
+exports.getEmployee = async (req, res) => {
+  try {
+    const employees = await User.findAll({
+      where: {  // Fixed syntax: use colon instead of curly brace
+        parentId: req.userId
+      },
+      include:[{
+        model:EmployeeInfo,
+        required:false
+      }]
+    });
+
+    if (!employees.length) {
+      return res.status(404).json({
+        success: false,
+        message: 'No employees found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: employees
+    });
+
+  } catch (error) {
+    console.error('Error fetching employees:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
   }
 };

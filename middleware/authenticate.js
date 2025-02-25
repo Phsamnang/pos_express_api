@@ -27,6 +27,7 @@ const authenticate = (req, res, next) => {
         const token = authHeader.replace('Bearer ', ''); 
         const decoded = jwt.verify(token, process.env.JWT_SECRET); 
         req.user = decoded; 
+        req.userId = decoded.userId;
         next(); 
 
     } catch (err) {
