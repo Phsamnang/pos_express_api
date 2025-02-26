@@ -122,6 +122,7 @@ exports.getEmployee = async (req, res) => {
  return res.status(200).json({
    success: true,
    data: employees.map((u) => ({
+    id:u.id,
      usr_nm: u.username,
      nm: u.name,
      user_info:EmployeeInfo.findByPk(u.id),
@@ -137,19 +138,5 @@ exports.getEmployee = async (req, res) => {
     });
   }
 };
-
-
-const getEmployeeInf =async(userId)=>{
-   try{
-       const empInfo = await EmployeeInfo.findOne({
-         where: {
-           userId:userId
-         },
-       });    
-       return empInfo;
-   }catch(e){
-    console.log(e);
-   }
-}
 
 
