@@ -23,11 +23,11 @@ exports.getLoanByUserIdAndDateBetween = async (req, res) => {
   try {
     const { userId, startDate, endDate } = req.params;
     const user = await User.findByPk(userId);
-    if(!user){
-      res.status(404).json({
-        status:404,
-        message:"User not found"
-      })
+    if (!user) {
+      return res.status(404).json({
+        status: 404,
+        message: "User not found",
+      });
     }
     const loans = await Laon.findAll({
       where: {
@@ -37,24 +37,25 @@ exports.getLoanByUserIdAndDateBetween = async (req, res) => {
         },
       },
     });
-    res.status(200).json({
+
+    if (loans.length == 0) {
+      return res.status(404).json({
+        status: 404,
+        message: "Loan is not found!",
+      });
+    }
+    return res.status(200).json({
       name: user.name,
       loans: loans.map((l) => ({
         amt: l.amount,
         laon_date: l.loadDate,
       })),
     });
-
-
-    if(loans.length==0){
-      res.status(404).json({
-        status:404,
-        message:"Loan is not found!"
-      })
-    }
   } catch (error) {
     console.log(error, "error");
-
-    res.status(500).json({ error: "Failed to get loans by date" });
+    return res.status(500).json({
+      status: 500,
+      message: "Failed to get loans",
+    });
   }
 };
