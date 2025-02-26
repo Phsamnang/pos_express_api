@@ -69,7 +69,7 @@ exports.login = async (req, res) => {
 
 exports.createEmployee = async (req, res) => {
   try {
-    const { username, password, name ,salary,phone,hire} = req.body;
+    const { username, password, name, salary, phone, hire } = req.body;
 
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1]; // Get token from Bearer header
@@ -93,11 +93,11 @@ exports.createEmployee = async (req, res) => {
     });
 
     await EmployeeInfo.create({
-      userId:employee.id,
-      baseSalary:salary,
-      phone:phone,
-      hireDate:hire
-    })
+      userId: employee.id,
+      baseSalary: salary,
+      phone: phone,
+      hireDate: hire,
+    });
 
     res.status(201).json({ message: "Employee created successfully" });
   } catch (error) {
@@ -109,41 +109,40 @@ exports.createEmployee = async (req, res) => {
 exports.getEmployee = async (req, res) => {
   try {
     const employees = await User.findAll({
-      where: {  // Fixed syntax: use colon instead of curly brace
-        parentId: req.userId
+      where: {
+        // Fixed syntax: use colon instead of curly brace
+        parentId: req.userId,
       },
-      include:{
-        model:EmployeeInfo,
-        attributes:['baseSalary','phone','hireDate']
-      }
+      include: {
+        model: EmployeeInfo,
+        as: "emp_infos",
+        attributes: ["baseSalary", "phone", "hireDate"],
+        required: false,
+      },
     });
 
     if (!employees.length) {
       return res.status(404).json({
         success: false,
-        message: 'No employees found'
+        message: "No employees found",
       });
     }
 
-   
- return res.status(200).json({
-   success: true,
-   data: employees.map((u) => ({
-    id:u.id,
-     usr_nm: u.username,
-     nm: u.name,
-     user_info:EmployeeInfo.findByPk(u.id),
-   })),
- });
-
+    return res.status(200).json({
+      success: true,
+      data: employees.map((u) => ({
+        id: u.id,
+        usr_nm: u.username,
+        nm: u.name,
+        emp_info: u.emp_infos ? u.emp_infos : null,
+      })),
+    });
   } catch (error) {
-    console.error('Error fetching employees:', error);
+    console.error("Error fetching employees:", error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error',
-      error: error.message
+      message: "Internal server error",
+      error: error.message,
     });
   }
 };
-
-

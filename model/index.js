@@ -35,8 +35,8 @@ Attendance.belongsTo(User, { foreignKey: "emp_id" });
 User.hasMany(Attendance, { foreignKey: "emp_id" }),
 User.hasMany(Laon, { foreignKey: "emp_id" });
 Laon.belongsTo(User, { foreignKey: "emp_id" });
-User.hasOne(EmployeeInfo, { foreignKey: "emp_id" });
-EmployeeInfo.belongsTo(User, { foreignKey: "emp_id" });
+User.hasOne(EmployeeInfo, { foreignKey: "emp_id" ,as:'emp_infos'});
+EmployeeInfo.belongsTo(User, { foreignKey: "emp_id" ,as:'user'});
 
 module.exports = {
   Category,
