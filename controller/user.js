@@ -69,7 +69,7 @@ exports.login = async (req, res) => {
 
 exports.createEmployee = async (req, res) => {
   try {
-    const { username, password, name } = req.body;
+    const { username, password, name ,salary,phone,hire} = req.body;
 
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1]; // Get token from Bearer header
@@ -91,6 +91,13 @@ exports.createEmployee = async (req, res) => {
       name: name,
       p_id: req.user.userId,
     });
+
+    await EmployeeInfo.create({
+      userId:employee.id,
+      baseSalary:salary,
+      phone:phone,
+      hireDate:hire
+    })
 
     res.status(201).json({ message: "Employee created successfully" });
   } catch (error) {
