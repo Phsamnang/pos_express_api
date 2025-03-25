@@ -127,7 +127,6 @@ exports.getEmployee = async (req, res) => {
         message: "No employees found",
       });
     }
-
     return res.status(200).json({
       success: true,
       data: employees.map((u) => ({
