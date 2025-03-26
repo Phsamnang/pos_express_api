@@ -69,3 +69,5 @@ const Import = database.define(
     underscored: true,
   }
 );
+
+module.exports = Import;

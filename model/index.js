@@ -2,6 +2,7 @@ const employeeInfo = require("../models/employeeInfo");
 const Attendance = require("./attendance");
 const Category = require("./category");
 const EmployeeInfo = require("./employeeInfor");
+const ImportDetail = require("./importDetails");
 const Laon = require("./loan");
 const MenusPrice = require("./menuprice");
 const Menus = require("./menus");
@@ -37,7 +38,8 @@ User.hasMany(Laon, { foreignKey: "emp_id" });
 Laon.belongsTo(User, { foreignKey: "emp_id" });
 User.hasOne(EmployeeInfo, { foreignKey: "emp_id" ,as:'emp_infos'});
 EmployeeInfo.belongsTo(User, { foreignKey: "emp_id" ,as:'user'});
-
+ImportDetail.belongsTo(Import, { foreignKey: "bill_id" });
+Import.hasMany(ImportDetail, { foreignKey: "bill_id" });
 module.exports = {
   Category,
   Product,
