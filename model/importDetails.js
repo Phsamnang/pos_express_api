@@ -1,3 +1,4 @@
+const { DataTypes, Sequelize } = require("sequelize");
 const database = require("../config/database");
 
 const ImportDetail = database.define(
@@ -64,7 +65,7 @@ const ImportDetail = database.define(
     updatedAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal(
-        "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+        "CURRENT_TIMESTAMP"
       ),
       field: "updated_at",
     },

@@ -2,6 +2,7 @@ const employeeInfo = require("../models/employeeInfo");
 const Attendance = require("./attendance");
 const Category = require("./category");
 const EmployeeInfo = require("./employeeInfor");
+const Import = require("./import");
 const ImportDetail = require("./importDetails");
 const Laon = require("./loan");
 const MenusPrice = require("./menuprice");

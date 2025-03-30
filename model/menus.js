@@ -7,6 +7,7 @@ const Menus = database.define("menus", {
     type: DataTypes.INTEGER,
     primaryKey: true,
     allowNull: false,
+    autoIncrement: true,
   },
   name: {
     type: DataTypes.STRING,

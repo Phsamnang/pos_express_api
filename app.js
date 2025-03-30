@@ -7,6 +7,7 @@ const userRouter=require('./router/user');
 const tableRouter=require('./router/table')
 const saleRouter=require('./router/sale')
 const loanRouter=require('./router/laon')
+const menuRouter=require('./router/menu')
 const cors=require('cors')
 const authenticate = require('./middleware/authenticate');
 const swaggerJSDoc = require('swagger-jsdoc');
@@ -47,6 +48,7 @@ app.use('/api/v1',userRouter)
 app.use('/api/v1',tableRouter)
 app.use('/api/v1',saleRouter)
 app.use("/api/v1", loanRouter);
+app.use("/api/v1", menuRouter);
 
 database.sync().then(()=>
     app.listen(8080,()=>{

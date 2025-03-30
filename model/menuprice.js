@@ -12,6 +12,7 @@ const MenusPrice = database.define("menus_price", {
   },
   price: {
     type: DataTypes.DECIMAL(10, 2),
+    field: "price",
   },
   tableTypeId: {
     type: DataTypes.INTEGER,
@@ -19,6 +20,7 @@ const MenusPrice = database.define("menus_price", {
       model: TableType,
       key: "id",
     },
+    field: "table_type_id",
   },
   menusId: {
     type: DataTypes.INTEGER,
@@ -26,7 +28,13 @@ const MenusPrice = database.define("menus_price", {
       model: Menus,
       key: "id",
     },
-  },
-});
+    field: "menus_id",
+  }
+}
+,
+  {
+    underscored: true,
+  }
+);
 
 module.exports = MenusPrice;
