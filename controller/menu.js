@@ -1,12 +1,22 @@
 const { Menus, MenusPrice } = require("../model");
 
-exports.getMenusByTableId = async (req, res) => {
+exports.createMenu = async (req, res) => {  
   
-  try {
- 
+  const { name, categoryId } = req.body;  
 
-    return res.status(200).json(menus);
+  try {
+    // Check if a menu with the same name already exists
+    const existingMenu = await Menus.findOne({ where: { name } });
+
+    if (existingMenu) {
+      return res.status(400).json({ error: "Menu with this name already exists" });
+    }
+
+    const menu = await Menus.create({ name, categoryId });
+    res.status(201).json(menu);
   } catch (err) {
-    res.status(500).json(err);
+    console.error(err);
+    res.status(500).json({ error: "Failed to create menu" });
   }
-};
+
+}
