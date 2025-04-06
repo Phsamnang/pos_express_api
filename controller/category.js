@@ -24,7 +24,7 @@ exports.createCategory = async (req, res) => {
 exports.getAllCategories = async (req, res) => {
   try {
     const category = await Category.findAll();
-    res.status(201).json(category);
+    res.status(200).json(category);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Unable to create product" });
