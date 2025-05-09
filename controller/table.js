@@ -1,4 +1,4 @@
-const { Table } = require("../model/index");
+const { Table, TableType } = require("../model/index");
 exports.createTable = async (req, res) => {
   try {
     const { name } = req.body;
@@ -17,10 +17,38 @@ exports.createTable = async (req, res) => {
 
 exports.getAllTable = async (req, res) => {
   try {
-    const table = await Table.findAll();
-    res.status(200).json(table);
+    const tables = await Table.findAll({
+      order: [["tableTypeId", "ASC"]],
+    });
+
+    const response = await Promise.all(
+      tables.map(async (table) => {
+        try {
+          const tableType = await TableType.findOne({
+            where: { id: table.tableTypeId },
+          });
+          return {
+            id: table.id,
+            name: table.tableName,
+            status: table.status,
+            category: tableType ? tableType.name : null,
+          };
+        } catch (err) {
+          console.error("Error fetching table type:", err);
+          return {
+            id: table.id,
+            name: table.tableName,
+            status: table.status,
+            category: null,
+          };
+        }
+      })
+    );
+
+    return res.status(200).json(response);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err });
+    console.error("Error fetching tables:", err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
+
