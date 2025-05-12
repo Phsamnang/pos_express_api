@@ -20,3 +20,22 @@ exports.createMenu = async (req, res) => {
   }
 
 }
+
+exports.getAllMenus = async (req, res) => {
+  try { 
+    const { tableId } = req.params;
+    const menus = await Menus.findAll({
+      include: [
+        {
+          model: MenusPrice,
+          as: "prices",
+          required: false,
+        },
+      ],
+    });
+    return  res.status(200).json(menus);
+  } catch (err) {
+    console.error(err);
+   return res.status(500).json({ error: "Failed to fetch menus" });
+  } 
+}

@@ -1,7 +1,8 @@
 const express=require("express");
-const { createMenu } = require("../controller/menu");
+const { createMenu, getAllMenus } = require("../controller/menu");
 const router=express.Router();
 
 router.post("/menu/create",createMenu)
+router.get("menu/:tableId",getAllMenus)
 
 module.exports=router;
