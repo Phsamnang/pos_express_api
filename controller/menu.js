@@ -1,4 +1,4 @@
-const { Menus, MenusPrice } = require("../model");
+const { Menus, MenusPrice, TableType, Category, Table } = require("../model");
 
 exports.createMenu = async (req, res) => {  
   
@@ -20,20 +20,44 @@ exports.createMenu = async (req, res) => {
   }
 
 }
-
 exports.getAllMenus = async (req, res) => {
   try { 
-    const { tableId } = req.params;
-    const menus = await Menus.findAll({
-      include: [
-        {
-          model: MenusPrice,
-          as: "prices",
-          required: false,
-        },
-      ],
+    const  tableId = req.params.tableId;
+    const menus = await Menus.findAll();
+    const tableType = await Table.findOne({
+      where: { id: tableId },
     });
-    return  res.status(200).json(menus);
+
+    console.log('====================================');
+    console.log(tableType);
+    console.log('====================================');
+
+    const response = await Promise.all(
+      menus.map(async (menu) => {
+        try {
+          const price = await MenusPrice.findOne({
+            where: {
+              menus_id: menu.id,
+              table_type_id: tableType.table_type_id,
+            },
+          }).then((price) => {
+            return price ? price.price : null;
+          });
+          return {
+            id: menu.id,
+            name: menu.name,
+            price: price,
+            category: await Category.findOne({
+              where: { id: menu.categoryId },
+            }).then((category) => category?.name || null),
+          };
+        } catch (err) {
+         return err;
+        }
+      })
+    );
+    const responseWithPrice = response.filter((menu) => menu.price !== null);
+    return  res.status(200).json(responseWithPrice);
   } catch (err) {
     console.error(err);
    return res.status(500).json({ error: "Failed to fetch menus" });

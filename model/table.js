@@ -24,6 +24,7 @@ const Table = database.define("Table", {
       model: TableType,
       key: "id",
     },
+    field: "table_type_id",
   },
 });
 
