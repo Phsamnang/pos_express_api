@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const database = require("../config/database");
-const { Sale, Product } = require("./index");
+const { Sale, Product, Menus } = require("./index");
 
 const SaleItem = database.define("SaleItem", {
   id: {
@@ -16,11 +16,11 @@ const SaleItem = database.define("SaleItem", {
       key: "id",
     },
   },
-  productId: {
+  menusId: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Product,
+      model: Menus,
       key: "id",
     },
   },

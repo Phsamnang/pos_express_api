@@ -28,10 +28,6 @@ exports.getAllMenus = async (req, res) => {
       where: { id: tableId },
     });
 
-    console.log('====================================');
-    console.log(tableType);
-    console.log('====================================');
-
     const response = await Promise.all(
       menus.map(async (menu) => {
         try {

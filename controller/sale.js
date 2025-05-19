@@ -1,5 +1,5 @@
 const { NUMBER } = require("sequelize");
-const { Sale, Table, SaleItem, Product } = require("../model/index");
+const { Sale, Table, SaleItem, Product, MenusPrice, Menus } = require("../model/index");
 
 exports.createSale = async (req, res) => {
   try {
@@ -24,19 +24,27 @@ exports.createSale = async (req, res) => {
 };
 
 exports.orderFood = async (req, res) => {
+  console.log("orderFood");
+  console.log(req.body);
   try {
-    const { saleId, productId, qty } = req.body;
+    const { saleId, menuId, qty,tableId } = req.body;
     // const table=await Table.findByPk(tableId);
-    const product = await Product.findByPk(productId);
     const sale = await Sale.findByPk(saleId);
-    const total = qty * product.price;
+    const table = await Table.findByPk(tableId);
+    const menusPrice = await MenusPrice.findOne({
+      where: {
+        menusId: menuId,
+        tableTypeId: table.tableTypeId,
+      },
+    });
+    const total = qty * menusPrice.price;
     const totalAmount = Number(sale.totalAmount) + Number(total);
     await sale.update({ totalAmount: totalAmount });
-    const saleIteme = await SaleItem.create({
+    const saleIteme = await SaleItem.create({ 
       saleId: saleId,
-      productId: productId,
+      menuId: menuId,
       quantity: qty,
-      priceAtSale: product.price,
+      priceAtSale: menusPrice.price,
     });
     res.status(201).json(saleIteme);
   } catch (err) {
@@ -48,26 +56,8 @@ exports.getByTableId = async (req, res) => {
   try {
     const tableId = req.params.tableId;
     const sales = await Sale.findAll({
-      where: { tableId, paymentMethod: "unpaid" },
-      include: [
-        {
-          model: SaleItem,
-          include: [
-            {
-              model: Product,
-            },
-          ],
-        },
-      ],
-    });
-    const formatSale = sales.map((sale) => ({
-      ...sale.toJSON(),
-      SaleItems: sale.SaleItems.map((item) => ({
-        ...item.toJSON(),
-        Product: item.Product.name,
-      })),
-    }));
-    res.json(formatSale);
+      where: { tableId, paymentMethod: "unpaid" }});
+    return res.status(200).json(sales);
   } catch (err) {
     console.log(err);
   }
