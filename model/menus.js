@@ -19,6 +19,10 @@ const Menus = database.define("menus", {
       key: "id",
     },
   },
+  isCooked: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 module.exports = Menus;
