@@ -6,11 +6,10 @@ const EmployeeInfo = database.define(
   {
     userId: {
       type: DataTypes.INTEGER,
-      primaryKey:true,
+      primaryKey: true,
       references: {
         model: User,
         key: "id",
-        
       },
       field: "emp_id",
     },

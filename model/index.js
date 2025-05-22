@@ -35,10 +35,10 @@ User.belongsTo(User, { as: "Parent", foreignKey: "p_id" });
 User.hasMany(User, { as: "Children", foreignKey: "p_id" });
 Attendance.belongsTo(User, { foreignKey: "emp_id" });
 User.hasMany(Attendance, { foreignKey: "emp_id" }),
-User.hasMany(Laon, { foreignKey: "emp_id" });
+  User.hasMany(Laon, { foreignKey: "emp_id" });
 Laon.belongsTo(User, { foreignKey: "emp_id" });
-User.hasOne(EmployeeInfo, { foreignKey: "emp_id" ,as:'emp_infos'});
-EmployeeInfo.belongsTo(User, { foreignKey: "emp_id" ,as:'user'});
+User.hasOne(EmployeeInfo, { foreignKey: "emp_id", as: "emp_infos" });
+EmployeeInfo.belongsTo(User, { foreignKey: "emp_id", as: "user" });
 ImportDetail.belongsTo(Import, { foreignKey: "bill_id" });
 Import.hasMany(ImportDetail, { foreignKey: "bill_id" });
 module.exports = {

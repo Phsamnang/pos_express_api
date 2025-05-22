@@ -64,9 +64,7 @@ const ImportDetail = database.define(
     },
     updatedAt: {
       type: DataTypes.DATE,
-      defaultValue: Sequelize.literal(
-        "CURRENT_TIMESTAMP"
-      ),
+      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       field: "updated_at",
     },
   },
