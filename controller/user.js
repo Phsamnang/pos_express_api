@@ -30,7 +30,7 @@ exports.register = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.status(201).json({ accessToken: token }); // Send the token in the response
+    res.status(201).json({ accessToken: token, id: newUser.id, name: newUser.name }); // Send the token in the response
   } catch (err) {
     console.error(err); // Log the error for debugging
     res.status(500).json({ error: "Unable to register user" });
@@ -60,7 +60,7 @@ exports.login = async (req, res) => {
       process.env.JWT_SECRET
     );
 
-    res.status(200).json({ accessToken: token });
+    res.status(200).json({ accessToken: token,id: user.id, name: user.name }); // Send the token in the response
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Unable to log in" });
