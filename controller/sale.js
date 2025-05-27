@@ -38,8 +38,6 @@ exports.orderFood = async (req, res) => {
         tableTypeId: table.tableTypeId,
       },
     });
-
-    console.log("menusPrice",menusPrice);
     const total = qty * menusPrice.price;
     const totalAmount = Number(sale.totalAmount) + Number(total);
     await sale.update({ totalAmount: totalAmount });
@@ -68,8 +66,6 @@ exports.getByTableId = async (req, res) => {
 };
 
 exports.getSaleById = async (req, res) => {
-
-  
   try {
 
     const saleId = req.params.saleId;
@@ -101,5 +97,26 @@ exports.getSaleById = async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: "Failed to get sale" });
+  }
+}
+
+exports.removeSaleItem = async (req, res) => { 
+  try {
+    const { saleItemId} = req.body;
+    const saleItem = await SaleItem.findByPk(saleItemId);
+    if (!saleItem) {
+      return res.status(404).json({ error: "Sale item not found" });
+    }
+    const sale = await Sale.findByPk(saleItem.saleId);
+    if (!sale) {
+      return res.status(404).json({ error: "Sale not found" });
+    }
+    const totalAmount = Number(sale.totalAmount) - Number(saleItem.priceAtSale * saleItem.quantity);
+    await sale.update({ totalAmount: totalAmount });
+    await saleItem.destroy();
+    return res.status(200).json({ message: "Sale item removed successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to remove sale item" });
   }
 }
