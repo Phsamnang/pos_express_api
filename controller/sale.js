@@ -24,7 +24,6 @@ exports.createSale = async (req, res) => {
 };
 
 exports.orderFood = async (req, res) => {
-  console.log("orderFood");
   console.log(req.body);
   try {
     const { saleId, menusId, qty,tableId } = req.body;
@@ -102,7 +101,7 @@ exports.getSaleById = async (req, res) => {
 
 exports.removeSaleItem = async (req, res) => { 
   try {
-    const { saleItemId} = req.body;
+    const { saleItemId } = req.params;
     const saleItem = await SaleItem.findByPk(saleItemId);
     if (!saleItem) {
       return res.status(404).json({ error: "Sale item not found" });
@@ -111,6 +110,7 @@ exports.removeSaleItem = async (req, res) => {
     if (!sale) {
       return res.status(404).json({ error: "Sale not found" });
     }
+
     const totalAmount = Number(sale.totalAmount) - Number(saleItem.priceAtSale * saleItem.quantity);
     await sale.update({ totalAmount: totalAmount });
     await saleItem.destroy();

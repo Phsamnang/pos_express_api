@@ -52,3 +52,19 @@ exports.getAllTable = async (req, res) => {
   }
 };
 
+exports.getTableType = async (req, res) => {  
+
+  try{
+    const tableTypes = await TableType.findAll();
+    const response = tableTypes.map((tableType) => ({
+      id: tableType.id,
+      name: tableType.name,
+    }));
+    return res.status(200).json(response);
+  }catch (err) {
+    console.error("Error fetching table types:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+
+}
+
