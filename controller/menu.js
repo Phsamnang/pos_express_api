@@ -117,7 +117,6 @@ exports.updateMenuPrice = async (req, res) => {
       await existingPrice.save();
       return res.status(200).json({ message: "Menu price updated successfully" });
     } else {
-      // Create a new price entry
       await MenusPrice.create({
         menus_id: menuId,
         table_type_id: tableTypeId,
