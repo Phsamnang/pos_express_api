@@ -7,7 +7,7 @@ const Menus = database.define("menus", {
     type: DataTypes.INTEGER,
     primaryKey: true,
     allowNull: false,
-    autoIncrement: true, 
+    autoIncrement: true,
   },
   name: {
     type: DataTypes.STRING,
@@ -22,6 +22,9 @@ const Menus = database.define("menus", {
   isCooked: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
+  },
+  img: {
+    type: DataTypes.STRING,
   },
 });
 

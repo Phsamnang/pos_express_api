@@ -8,6 +8,7 @@ const tableRouter=require('./router/table')
 const saleRouter=require('./router/sale')
 const loanRouter=require('./router/laon')
 const menuRouter=require('./router/menu')
+const imageRouter = require("./router/image");
 const cors=require('cors')
 const authenticate = require('./middleware/authenticate');
 const swaggerJSDoc = require('swagger-jsdoc');
@@ -49,6 +50,7 @@ app.use('/api/v1',tableRouter)
 app.use('/api/v1',saleRouter)
 app.use("/api/v1", loanRouter);
 app.use("/api/v1", menuRouter);
+app.use("/api/v1", imageRouter);
 
 database.sync().then(()=>
     app.listen(8080,()=>{
@@ -56,5 +58,12 @@ database.sync().then(()=>
     })
 ).catch(()=>{
     console.log("can not connect to database!");
-    
 })
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: "An unexpected error occurred!",
+  });
+});

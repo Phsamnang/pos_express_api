@@ -1,9 +1,8 @@
+const imagekit = require("../config/imagekit");
 const { Menus, MenusPrice, TableType, Category, Table } = require("../model");
 
 exports.createMenu = async (req, res) => {  
-  
   const { name, categoryId } = req.body;  
-
   try {
     // Check if a menu with the same name already exists
     const existingMenu = await Menus.findOne({ where: { name } });
@@ -128,4 +127,42 @@ exports.updateMenuPrice = async (req, res) => {
     console.error(err);
     return res.status(500).json({ error: "Failed to update menu price" });
   } 
+}
+exports.updateMenuImage = async (req, res) => {
+  try{
+
+    const { menuId } = req.body;
+    const file = req.file; // Assuming you're using multer for file uploads
+
+    if (!file) {
+      return res.status(400).json({ error: "No image file provided" });
+    }
+
+    // Check if the menu exists
+    const menu = await Menus.findByPk(menuId);
+    if (!menu) {
+      return res.status(404).json({ error: "Menu not found" });
+    }
+
+    // Upload the image to ImageKit
+    const response = await imagekit.upload({
+      file: file.buffer, // The file buffer
+      fileName: file.originalname, // The original file name
+      folder: "menus", // Optional: specify a folder in ImageKit
+      useUniqueFileName: true, // Optional: specify a folder in ImageKit
+    });
+
+    // Update the menu with the new image URL
+    menu.img = response.url;
+    await menu.save();
+
+    return res.status(200).json({
+      message: "Menu image updated successfully",
+      imgUrl: response.url,
+    }); 
+
+  }catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to update menu image" });
+  }
 }
