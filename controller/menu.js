@@ -131,7 +131,7 @@ exports.updateMenuPrice = async (req, res) => {
 exports.updateMenuImage = async (req, res) => {
   try{
 
-    const { menuId } = req.body;
+    const  menuId  = req.params.menuId;
     const file = req.file; // Assuming you're using multer for file uploads
 
     if (!file) {

@@ -6,5 +6,6 @@ router.post("/menu/create",createMenu)
 router.get("/menu/:tableId",getAllMenus)
 router.get("/menus",getAllMenusWithPrice)
 router.post("/menu/update",updateMenuPrice) 
-router.post('menu/:menuId/image',updateMenuImage)
+router.post('/menu/:menuId/image',updateMenuImage)
+
 module.exports=router;
