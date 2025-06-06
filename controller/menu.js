@@ -45,6 +45,7 @@ exports.getAllMenus = async (req, res) => {
             category: await Category.findOne({
               where: { id: menu.categoryId },
             }).then((category) => category?.name || null),
+            img: menu.img || null,
           };
         } catch (err) {
          return err;
@@ -83,6 +84,7 @@ exports.getAllMenusWithPrice = async (req, res) => {
           price: price.price,
           tableType: price.table_type.id,
         })),
+        img: menu.img,
       };
 
     })); 
@@ -152,7 +154,6 @@ exports.updateMenuImage = async (req, res) => {
       useUniqueFileName: true, // Optional: specify a folder in ImageKit
     });
 
-    // Update the menu with the new image URL
     menu.img = response.url;
     await menu.save();
 
