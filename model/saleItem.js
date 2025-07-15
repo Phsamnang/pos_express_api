@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const database = require("../config/database");
-const { Sale, Product, Menus } = require("./index");
+const { Sale, Menus } = require("./index");
 
 const SaleItem = database.define("SaleItem", {
   id: {
@@ -30,6 +30,18 @@ const SaleItem = database.define("SaleItem", {
   },
   priceAtSale: {
     type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+  },
+  delivery_sts: {
+    type: DataTypes.ENUM(
+      "pending",
+      "processing",
+      "shipped",
+      "delivered",
+      "cancelled",
+      "returned"
+    ),
+    defaultValue: "pending",
     allowNull: false,
   },
 });
