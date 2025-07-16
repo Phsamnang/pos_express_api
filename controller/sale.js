@@ -1,5 +1,12 @@
 const { NUMBER } = require("sequelize");
-const { Sale, Table, SaleItem, Product, MenusPrice, Menus } = require("../model/index");
+const {
+  Sale,
+  Table,
+  SaleItem,
+  Product,
+  MenusPrice,
+  Menus,
+} = require("../model/index");
 const { DateTime } = require("luxon");
 
 exports.createSale = async (req, res) => {
@@ -26,7 +33,7 @@ exports.createSale = async (req, res) => {
 
 exports.orderFood = async (req, res) => {
   try {
-    const { saleId, menusId, qty,tableId } = req.body;
+    const { saleId, menusId, qty, tableId } = req.body;
     // const table=await Table.findByPk(tableId);
     const sale = await Sale.findByPk(saleId);
     const table = await Table.findByPk(tableId);
@@ -42,9 +49,9 @@ exports.orderFood = async (req, res) => {
     });
     const total = qty * menusPrice.price;
 
-    console.log('====================================');
+    console.log("====================================");
     console.log("total", total);
-    console.log('====================================');
+    console.log("====================================");
     await sale.update({
       totalAmount: Number(sale.totalAmount) + Number(total),
     });
@@ -56,11 +63,18 @@ exports.orderFood = async (req, res) => {
       delivery_sts: isCooked ? "pending" : "shipped",
       startOrderTime: DateTime.now().setZone("Asia/Phnom_Penh").toJSDate(), // Set the current time as the start order time
     });
+    const io = req.app.get("io");
 
-      const io=req.app.get('io');
-      io.emit('foodOrdered', {
+    if (isCooked) {
+      io.emit("foodOrdered", {
         order_id: saleIteme.id,
       });
+    } else {
+      io.emit("foodDelivery", {
+        message: "Delivery status updated successfully",
+      });
+    }
+
     return res.status(201).json(saleIteme);
   } catch (err) {
     console.log(err);
@@ -73,7 +87,8 @@ exports.getByTableId = async (req, res) => {
   try {
     const tableId = req.params.tableId;
     const sales = await Sale.findOne({
-      where: { tableId, paymentMethod: "unpaid" }});
+      where: { tableId, paymentMethod: "unpaid" },
+    });
     return res.status(200).json(sales);
   } catch (err) {
     console.log(err);
@@ -82,9 +97,8 @@ exports.getByTableId = async (req, res) => {
 
 exports.getSaleById = async (req, res) => {
   try {
-
     const saleId = req.params.saleId;
-   const saleItem= await SaleItem.findAll({
+    const saleItem = await SaleItem.findAll({
       where: { saleId },
       include: [
         {
@@ -95,7 +109,6 @@ exports.getSaleById = async (req, res) => {
     });
 
     if (!saleItem) {
-
       return res.status(404).json({ error: "Sale not found" });
     }
     const sale = await Sale.findByPk(saleId);
@@ -113,9 +126,9 @@ exports.getSaleById = async (req, res) => {
     console.log(err);
     return res.status(500).json({ error: "Failed to get sale" });
   }
-}
+};
 
-exports.removeSaleItem = async (req, res) => { 
+exports.removeSaleItem = async (req, res) => {
   try {
     const { saleItemId } = req.params;
     const saleItem = await SaleItem.findByPk(saleItemId);
@@ -127,7 +140,9 @@ exports.removeSaleItem = async (req, res) => {
       return res.status(404).json({ error: "Sale not found" });
     }
 
-    const totalAmount = Number(sale.totalAmount) - Number(saleItem.priceAtSale * saleItem.quantity);
+    const totalAmount =
+      Number(sale.totalAmount) -
+      Number(saleItem.priceAtSale * saleItem.quantity);
     await sale.update({ totalAmount: totalAmount });
     await saleItem.destroy();
     return res.status(200).json({ message: "Sale item removed successfully" });
@@ -135,4 +150,4 @@ exports.removeSaleItem = async (req, res) => {
     console.error(err);
     return res.status(500).json({ error: "Failed to remove sale item" });
   }
-}
+};
