@@ -9,6 +9,7 @@ const saleRouter=require('./router/sale')
 const loanRouter=require('./router/laon')
 const menuRouter=require('./router/menu')
 const imageRouter = require("./router/image");
+const chefRouter = require('./router/chef');
 const cors=require('cors')
 const authenticate = require('./middleware/authenticate');
 const swaggerJSDoc = require('swagger-jsdoc');
@@ -51,19 +52,24 @@ app.use('/api/v1',saleRouter)
 app.use("/api/v1", loanRouter);
 app.use("/api/v1", menuRouter);
 app.use("/api/v1", imageRouter);
+app.use('/api/v1', chefRouter);
 
-database.sync().then(()=>
-    app.listen(8080,()=>{
-        console.log("App is running on port 8080"); 
+database
+  .sync() // Use { alter: true } to update the schema without dropping tables
+  .then(() =>
+    app.listen(8080, () => {
+      console.log("App is running on port 8080");
     })
-).catch(()=>{
+  )
+  .catch(() => {
     console.log("can not connect to database!");
-})
+    process.exit(1);
+  });
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
     success: false,
-    message: "An unexpected error occurred!",
+    message: err.message || "An unexpected error occurred!",
   });
 });

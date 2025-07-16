@@ -44,6 +44,15 @@ const SaleItem = database.define("SaleItem", {
     defaultValue: "pending",
     allowNull: false,
   },
+  // New fields added here
+  startOrderTime: {
+    type: DataTypes.DATE, // Use DataTypes.DATE for datetime with timezone (recommended)
+    allowNull: true, // Allow null initially, as it might not be set immediately
+  },
+  completedTime: {
+    type: DataTypes.DATE, // Use DataTypes.DATE for datetime with timezone (recommended)
+    allowNull: true, // Allow null until the order item is completed
+  },
 });
 
 module.exports = SaleItem;
