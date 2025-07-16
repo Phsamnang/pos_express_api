@@ -1,5 +1,6 @@
 const { NUMBER } = require("sequelize");
 const { Sale, Table, SaleItem, Product, MenusPrice, Menus } = require("../model/index");
+const { DateTime } = require("luxon");
 
 exports.createSale = async (req, res) => {
   try {
@@ -24,12 +25,14 @@ exports.createSale = async (req, res) => {
 };
 
 exports.orderFood = async (req, res) => {
-  console.log(req.body);
   try {
     const { saleId, menusId, qty,tableId } = req.body;
     // const table=await Table.findByPk(tableId);
     const sale = await Sale.findByPk(saleId);
     const table = await Table.findByPk(tableId);
+    const menus = await Menus.findByPk(menusId);
+
+    const isCooked = menus.isCooked;
 
     const menusPrice = await MenusPrice.findOne({
       where: {
@@ -38,17 +41,30 @@ exports.orderFood = async (req, res) => {
       },
     });
     const total = qty * menusPrice.price;
-    const totalAmount = Number(sale.totalAmount) + Number(total);
-    await sale.update({ totalAmount: totalAmount });
-    const saleIteme = await SaleItem.create({ 
+
+    console.log('====================================');
+    console.log("total", total);
+    console.log('====================================');
+    await sale.update({
+      totalAmount: Number(sale.totalAmount) + Number(total),
+    });
+    const saleIteme = await SaleItem.create({
       saleId: saleId,
       menusId: menusId,
       quantity: qty,
       priceAtSale: menusPrice.price,
+      delivery_sts: isCooked ? "pending" : "shipped",
+      startOrderTime: DateTime.now().setZone("Asia/Phnom_Penh").toJSDate(), // Set the current time as the start order time
     });
-    res.status(201).json(saleIteme);
+
+      const io=req.app.get('io');
+      io.emit('foodOrdered', {
+        order_id: saleIteme.id,
+      });
+    return res.status(201).json(saleIteme);
   } catch (err) {
     console.log(err);
+
     return res.status(500).json({ error: "Failed to order food" });
   }
 };

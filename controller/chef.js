@@ -29,6 +29,7 @@ exports.getFoodOrder= async (req, res,next) => {
         start_time: food.startOrderTime,
         delivery_sts: food.delivery_sts,
         table_name: await getTableName(food.saleId),
+        
       })));
      return res.status(200).json(foodOrders);
     }catch (error) {
