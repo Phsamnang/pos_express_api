@@ -1,5 +1,6 @@
 const { Op, where } = require("sequelize");
 const { SaleItem, Menus, Sale, Table } = require("../model");
+const e = require("express");
 
 exports.getFoodOrder= async (req, res,next) => {
 
@@ -62,14 +63,13 @@ exports.updateDeliveryStatus = async (req, res) => {
         console.log('====================================');
 
         if (updated) {
+             if (status == "shipped") {
+               const io = req.app.get("io");
+               io.emit("foodDelivery", {
+                 message: "Delivery status updated successfully",
+               });
+             }
             return res.status(200).json({ message: "Delivery status updated successfully" });
-        }
-
-        if(status=='shipped'){
-             const io = req.app.get("io");
-             io.emit("foodDelivery", {
-               message: "Delivery status updated successfully",
-             });
         }
 
         return res.status(404).json({ error: "Order not found" });
@@ -80,7 +80,7 @@ exports.updateDeliveryStatus = async (req, res) => {
     }
 }
 
-const getTableName = async (saleId) => {
+ const getTableName = async (saleId) => {
   try {
     const sale = await Sale.findByPk(saleId, {
       include: [{ model: Table, attributes: ["tableName"] }],
@@ -92,3 +92,5 @@ const getTableName = async (saleId) => {
     return "Unknown Table";
   }
 }
+
+exports.getTableName = getTableName;
