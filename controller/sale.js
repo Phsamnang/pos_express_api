@@ -151,3 +151,23 @@ exports.removeSaleItem = async (req, res) => {
     return res.status(500).json({ error: "Failed to remove sale item" });
   }
 };
+
+
+exports.salePayment = async (req, res) => {
+  try {
+    const { saleId, paymentMethod } = req.body;
+    const sale = await Sale.findByPk(saleId);
+    if (!sale) {
+      return res.status(404).json({ error: "Sale not found" });
+    }
+    await sale.update({ paymentMethod: paymentMethod });
+    await Table.update(
+      { status: "available" },
+      { where: { id: sale.tableId } }
+    );
+    return res.status(200).json({ message: "Payment method updated successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to update payment method" });
+  }
+};
