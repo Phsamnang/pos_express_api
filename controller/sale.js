@@ -197,7 +197,7 @@ exports.getSaleByDate = async (req, res) => {
     }));
     const mainResponse = {
       totalSales: response.length,
-      totalAmount: response.reduce((acc, sale) => acc + parseFloat(sale.totalAmount), 0),
+      totalAmount: response.filter((sale) => sale.paymentMethod !== "unpaid").reduce((acc, sale) => acc + parseFloat(sale.totalAmount), 0),
       sales: response,
     };
     return res.status(200).json(
