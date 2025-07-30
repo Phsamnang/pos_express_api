@@ -1,4 +1,4 @@
-const { NUMBER } = require("sequelize");
+const { NUMBER, Op } = require("sequelize");
 const {
   Sale,
   Table,
@@ -171,3 +171,25 @@ exports.salePayment = async (req, res) => {
     return res.status(500).json({ error: "Failed to update payment method" });
   }
 };
+
+exports.getSaleByDate = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+    const sales = await Sale.findAll({
+      where: {
+        saleDate: {
+          [Op.between]: [new Date(startDate), new Date(endDate)],
+        },
+      },
+      include: [
+        {
+          model: Table
+        },
+      ],
+    });
+    return res.status(200).json(sales);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to retrieve sales by date" });
+  }
+} 
