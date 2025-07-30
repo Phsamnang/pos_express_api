@@ -187,7 +187,22 @@ exports.getSaleByDate = async (req, res) => {
         },
       ],
     });
-    return res.status(200).json(sales);
+    const response = sales.map((sale) => ({
+      id: sale.id,
+      tableId: sale.tableId,
+      saleDate: sale.saleDate,
+      totalAmount: sale.totalAmount,
+      paymentMethod: sale.paymentMethod,
+      tableName: sale.Table.tableName,
+    }));
+    const mainResponse = {
+      totalSales: response.length,
+      totalAmount: response.reduce((acc, sale) => acc + parseFloat(sale.totalAmount), 0),
+      sales: response,
+    };
+    return res.status(200).json(
+      mainResponse
+    );
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to retrieve sales by date" });
