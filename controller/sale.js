@@ -8,6 +8,7 @@ const {
   Menus,
 } = require("../model/index");
 const { DateTime } = require("luxon");
+const database = require("../config/database");
 
 exports.createSale = async (req, res) => {
   try {
@@ -18,13 +19,16 @@ exports.createSale = async (req, res) => {
     } else if (table.status != "available") {
       res.status(400).json({ error: "Table already used" });
     }
-    const newSale = await Sale.create({
-      tableId: tableId,
-      totalAmount: 0.0,
-      paymentMethod: "unpaid",
+    const newCreate = await database.transaction(async (transaction) => {
+      const newSale = await Sale.create({
+        tableId: tableId,
+        totalAmount: 0.0,
+        paymentMethod: "unpaid",
+      },{ transaction });
+      return newSale;
     });
     await table.update({ status: "occupied" });
-    res.status(201).json(newSale);
+    res.status(201).json(newCreate);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to create sale" });
@@ -152,7 +156,6 @@ exports.removeSaleItem = async (req, res) => {
   }
 };
 
-
 exports.salePayment = async (req, res) => {
   try {
     const { saleId, paymentMethod } = req.body;
@@ -165,7 +168,9 @@ exports.salePayment = async (req, res) => {
       { status: "available" },
       { where: { id: sale.tableId } }
     );
-    return res.status(200).json({ message: "Payment method updated successfully" });
+    return res
+      .status(200)
+      .json({ message: "Payment method updated successfully" });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to update payment method" });
@@ -175,15 +180,28 @@ exports.salePayment = async (req, res) => {
 exports.getSaleByDate = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
+
+       if (!startDate || !endDate) {
+         return res
+           .status(400)
+           .json({ error: "startDate and endDate are required" });
+       }
+
+       // --- Start of Fix ---
+       const start = new Date(startDate);
+       const end = new Date(endDate);
+
+       // Set the time to the very end of the day to include all sales
+       end.setHours(23, 59, 59, 999);
     const sales = await Sale.findAll({
       where: {
         saleDate: {
-          [Op.between]: [new Date(startDate), new Date(endDate)],
+          [Op.between]: [start, end],
         },
       },
       include: [
         {
-          model: Table
+          model: Table,
         },
       ],
     });
@@ -194,17 +212,21 @@ exports.getSaleByDate = async (req, res) => {
       totalAmount: sale.totalAmount,
       paymentMethod: sale.paymentMethod,
       tableName: sale.Table.tableName,
+      referenceId: sale.referenceId,
     }));
     const mainResponse = {
       totalSales: response.length,
-      totalAmount: response.filter((sale) => sale.paymentMethod !== "unpaid").reduce((acc, sale) => acc + parseFloat(sale.totalAmount), 0),
+      totalAmount: response
+        .filter((sale) => sale.paymentMethod !== "unpaid")
+        .reduce((acc, sale) => acc + parseFloat(sale.totalAmount), 0),
+      unPaidSales: response
+        .filter((sale) => sale.paymentMethod === "unpaid")
+        .reduce((acc, sale) => acc + parseFloat(sale.totalAmount), 0),
       sales: response,
     };
-    return res.status(200).json(
-      mainResponse
-    );
+    return res.status(200).json(mainResponse);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to retrieve sales by date" });
   }
-} 
+};
