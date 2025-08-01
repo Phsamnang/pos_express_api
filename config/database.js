@@ -1,7 +1,10 @@
 const { Sequelize } = require("sequelize");
+const {development} = require("./config.json");
 
-const database = new Sequelize("express", "postgres", "1234", {
-  host: "localhost",
+const th = development.database || "sndrmanagement";
+
+const database = new Sequelize(th,development.username, development.password, {
+  host: development.host || "localhost",
   port: 5432,
   dialect: "postgres",
 });
