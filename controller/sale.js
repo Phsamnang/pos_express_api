@@ -20,11 +20,14 @@ exports.createSale = async (req, res) => {
       res.status(400).json({ error: "Table already used" });
     }
     const newCreate = await database.transaction(async (transaction) => {
-      const newSale = await Sale.create({
-        tableId: tableId,
-        totalAmount: 0.0,
-        paymentMethod: "unpaid",
-      },{ transaction });
+      const newSale = await Sale.create(
+        {
+          tableId: tableId,
+          totalAmount: 0.0,
+          paymentMethod: "unpaid",
+        },
+        { transaction }
+      );
       return newSale;
     });
     await table.update({ status: "occupied" });
@@ -164,10 +167,15 @@ exports.salePayment = async (req, res) => {
       return res.status(404).json({ error: "Sale not found" });
     }
     await sale.update({ paymentMethod: paymentMethod });
+    await SaleItem.update(
+        { delivery_sts: "delivered" },
+        { where: { saleId: saleId } }
+      );
     await Table.update(
       { status: "available" },
       { where: { id: sale.tableId } }
     );
+    
     return res
       .status(200)
       .json({ message: "Payment method updated successfully" });
@@ -181,18 +189,18 @@ exports.getSaleByDate = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
 
-       if (!startDate || !endDate) {
-         return res
-           .status(400)
-           .json({ error: "startDate and endDate are required" });
-       }
+    if (!startDate || !endDate) {
+      return res
+        .status(400)
+        .json({ error: "startDate and endDate are required" });
+    }
 
-       // --- Start of Fix ---
-       const start = new Date(startDate);
-       const end = new Date(endDate);
+    // --- Start of Fix ---
+    const start = new Date(startDate);
+    const end = new Date(endDate);
 
-       // Set the time to the very end of the day to include all sales
-       end.setHours(23, 59, 59, 999);
+    // Set the time to the very end of the day to include all sales
+    end.setHours(23, 59, 59, 999);
     const sales = await Sale.findAll({
       where: {
         saleDate: {

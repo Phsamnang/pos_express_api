@@ -89,7 +89,6 @@ exports.getAllProduct = async (req, res) => {
       categoryName: p.Category.name,
     }));
 
-
     res.status(200).json(customRespone);
   } catch (err) {
     res.status(500).json(err);

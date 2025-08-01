@@ -72,8 +72,8 @@ const Sale = database.define(
             // Increment it for the new ID
             nextIdNumber = lastIdNumber + 1;
           }
-      
-           const paddedSequence = nextIdNumber.toString().padStart(4, "0");
+
+          const paddedSequence = nextIdNumber.toString().padStart(4, "0");
           // Format the new ID (e.g., "20250731-001")
           const nextId = `${datePrefix}${paddedSequence}`;
           sale.referenceId = nextId;

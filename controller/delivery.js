@@ -2,21 +2,21 @@ const { Op } = require("sequelize");
 const { SaleItem, Menus } = require("../model");
 const { getTableName } = require("./chef");
 
-exports.getDeliveryOrders = async (req, res, next) => {
-
-    try {
-      const foods = await SaleItem.findAll({
-        where: {
-          [Op.or]: [{ delivery_sts: "shipped" }],
+exports. getDeliveryOrders = async (req, res, next) => {
+  try {
+    const foods = await SaleItem.findAll({
+      where: {
+        [Op.or]: [{ delivery_sts: "shipped" }],
+      },
+      include: [
+        {
+          model: Menus,
         },
-        include: [
-          {
-            model: Menus
-          },
-        ],
-        order: [["startOrderTime", "ASC"]],
-      });
-      const foodOrders = await Promise.all(foods.map(async (food) => ({
+      ],
+      order: [["startOrderTime", "ASC"]],
+    });
+    const foodOrders = await Promise.all(
+      foods.map(async (food) => ({
         id: food.id,
         name: food.menu.name,
         qty: food.quantity,
@@ -24,26 +24,24 @@ exports.getDeliveryOrders = async (req, res, next) => {
         table_name: await getTableName(food.saleId),
         start_time: food.startOrderTime,
         delivery_sts: food.delivery_sts,
-      })));
-      return res.status(200).json(foodOrders);
-    } catch (error) {
-        console.log('====================================');
-        console.log("Error fetching delivery orders:", error);
-        console.log('====================================');
-        return res.status(500).json({ message: "Errors get items", error });
-    }
-}
+      }))
+    );
+    return res.status(200).json(foodOrders);
+  } catch (error) {
+    console.log("====================================");
+    console.log("Error fetching delivery orders:", error);
+    console.log("====================================");
+    return res.status(500).json({ message: "Errors get items", error });
+  }
+};
 
 exports.updateDeliveryStatus = async (req, res, next) => {
- 
-  try{
+  try {
     const { id, status } = req.body;
 
-
-    console.log('====================================');
+    console.log("====================================");
     console.log("Updating delivery status for ID:", id, "to status:", status);
-    console.log('====================================');
-    
+    console.log("====================================");
 
     // Validate input
     if (!id || !status) {
@@ -51,17 +49,25 @@ exports.updateDeliveryStatus = async (req, res, next) => {
     }
 
     // Check if the status is valid
-    const validStatuses = ["pending", "processing", "shipped", "delivered", "cancelled", "returned"];
+    const validStatuses = [
+      "pending",
+      "processing",
+      "shipped",
+      "delivered",
+      "cancelled",
+      "returned",
+    ];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }
 
     // Update the delivery status
     const updatedItem = await SaleItem.update(
-      { delivery_sts: status,
+      {
+        delivery_sts: status,
         // Optionally, you can also update the completedTime if the status is 'delivered'
-       completedTime: status === 'delivered' ? new Date() : null  
-       },
+        completedTime: status === "delivered" ? new Date() : null,
+      },
       { where: { id } }
     );
 
@@ -69,11 +75,15 @@ exports.updateDeliveryStatus = async (req, res, next) => {
       return res.status(404).json({ message: "Sale item not found" });
     }
 
-    return res.status(200).json({ message: "Delivery status updated successfully" });
-  }catch(error) {
-    console.log('====================================');
+    return res
+      .status(200)
+      .json({ message: "Delivery status updated successfully" });
+  } catch (error) {
+    console.log("====================================");
     console.log("Error updating delivery status:", error);
-    console.log('====================================');
-    return res.status(500).json({ message: "Error updating delivery status", error });
+    console.log("====================================");
+    return res
+      .status(500)
+      .json({ message: "Error updating delivery status", error });
   }
-}
+};

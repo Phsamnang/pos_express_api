@@ -1,14 +1,16 @@
 const imagekit = require("../config/imagekit");
 const { Menus, MenusPrice, TableType, Category, Table } = require("../model");
 
-exports.createMenu = async (req, res) => {  
-  const { name, categoryId } = req.body;  
+exports.createMenu = async (req, res) => {
+  const { name, categoryId } = req.body;
   try {
     // Check if a menu with the same name already exists
     const existingMenu = await Menus.findOne({ where: { name } });
 
     if (existingMenu) {
-      return res.status(400).json({ error: "Menu with this name already exists" });
+      return res
+        .status(400)
+        .json({ error: "Menu with this name already exists" });
     }
 
     const menu = await Menus.create({ name, categoryId });
@@ -17,11 +19,10 @@ exports.createMenu = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Failed to create menu" });
   }
-
-}
+};
 exports.getAllMenus = async (req, res) => {
-  try { 
-    const  tableId = req.params.tableId;
+  try {
+    const tableId = req.params.tableId;
     const menus = await Menus.findAll();
     const tableType = await Table.findOne({
       where: { id: tableId },
@@ -48,54 +49,54 @@ exports.getAllMenus = async (req, res) => {
             img: menu.img || null,
           };
         } catch (err) {
-         return err;
+          return err;
         }
       })
     );
     const responseWithPrice = response.filter((menu) => menu.price !== null);
-    return  res.status(200).json(responseWithPrice);
+    return res.status(200).json(responseWithPrice);
   } catch (err) {
     console.error(err);
-   return res.status(500).json({ error: "Failed to fetch menus" });
-  } 
-} 
+    return res.status(500).json({ error: "Failed to fetch menus" });
+  }
+};
 
 exports.getAllMenusWithPrice = async (req, res) => {
   try {
     const menus = await Menus.findAll({
-      include:[
+      include: [
         {
-          model:MenusPrice,
-          include:[
+          model: MenusPrice,
+          include: [
             {
-              model:TableType,
-            }
-          ]
+              model: TableType,
+            },
+          ],
         },
-      ]
+      ],
     });
-    const response = await Promise.all( menus.map(async (menu) => {
-    const category = await Category.findByPk(menu.categoryId);
-      return {
-        id: menu.id,
-        name: menu.name,
-        category:category.name,
-        prices: menu.menus_prices.map((price) => ({
-          price: price.price,
-          tableType: price.table_type.id,
-        })),
-        img: menu.img,
-      };
-
-    })); 
+    const response = await Promise.all(
+      menus.map(async (menu) => {
+        const category = await Category.findByPk(menu.categoryId);
+        return {
+          id: menu.id,
+          name: menu.name,
+          category: category.name,
+          prices: menu.menus_prices.map((price) => ({
+            price: price.price,
+            tableType: price.table_type.id,
+          })),
+          img: menu.img,
+        };
+      })
+    );
 
     return res.status(200).json(response);
-
-  }catch (err) {
+  } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to fetch menus with price" });
   }
-}
+};
 
 exports.updateMenuPrice = async (req, res) => {
   const { menuId, tableTypeId, price } = req.body;
@@ -116,24 +117,27 @@ exports.updateMenuPrice = async (req, res) => {
       // Update the existing price
       existingPrice.price = price;
       await existingPrice.save();
-      return res.status(200).json({ message: "Menu price updated successfully" });
+      return res
+        .status(200)
+        .json({ message: "Menu price updated successfully" });
     } else {
       await MenusPrice.create({
         menus_id: menuId,
         table_type_id: tableTypeId,
         price,
       });
-      return res.status(201).json({ message: "Menu price created successfully" });
+      return res
+        .status(201)
+        .json({ message: "Menu price created successfully" });
     }
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to update menu price" });
-  } 
-}
+  }
+};
 exports.updateMenuImage = async (req, res) => {
-  try{
-
-    const  menuId  = req.params.menuId;
+  try {
+    const menuId = req.params.menuId;
     const file = req.file; // Assuming you're using multer for file uploads
 
     if (!file) {
@@ -160,10 +164,9 @@ exports.updateMenuImage = async (req, res) => {
     return res.status(200).json({
       message: "Menu image updated successfully",
       imgUrl: response.url,
-    }); 
-
-  }catch (err) {
+    });
+  } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to update menu image" });
   }
-}
+};
