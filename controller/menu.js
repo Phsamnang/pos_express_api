@@ -2,7 +2,7 @@ const imagekit = require("../config/imagekit");
 const { Menus, MenusPrice, TableType, Category, Table } = require("../model");
 
 exports.createMenu = async (req, res) => {
-  const { name, categoryId } = req.body;
+  const { name, categoryId,isCooked } = req.body;
   try {
     // Check if a menu with the same name already exists
     const existingMenu = await Menus.findOne({ where: { name } });
@@ -13,7 +13,7 @@ exports.createMenu = async (req, res) => {
         .json({ error: "Menu with this name already exists" });
     }
 
-    const menu = await Menus.create({ name, categoryId });
+    const menu = await Menus.create({ name, categoryId,isCooked });
     res.status(201).json(menu);
   } catch (err) {
     console.error(err);
