@@ -1,14 +1,14 @@
 const { Table, TableType } = require("../model/index");
 exports.createTable = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name,typeId } = req.body;
     const existingTable = await Table.findOne({ where: { tableName: name } });
     if (existingTable) {
       return res
         .status(400)
         .json({ error: "Table with this name already exists" });
     }
-    const table = await Table.create({ tableName: name });
+    const table = await Table.create({ tableName: name , tableTypeId: typeId });
     res.status(201).json(table);
   } catch (err) {
     console.log(err);
@@ -32,6 +32,7 @@ exports.getAllTable = async (req, res) => {
             name: table.tableName,
             status: table.status,
             category: tableType ? tableType.name : null,
+            createdAt: table.createdAt,
           };
         } catch (err) {
           console.error("Error fetching table type:", err);
@@ -63,5 +64,23 @@ exports.getTableType = async (req, res) => {
   } catch (err) {
     console.error("Error fetching table types:", err);
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+exports.createTableType = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const existingTableType = await TableType.findOne({ where: { name } });
+    if (existingTableType) {
+      return res
+        .status(400)
+        .json({ error: "Table type with this name already exists" });
+    }
+    const tableType = await TableType.create({ name });
+    res.status(201).json(tableType);
+  } catch (err) {
+    console.error("Error creating table type:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

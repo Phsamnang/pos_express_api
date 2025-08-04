@@ -5,6 +5,6 @@ const router = express.Router();
 router.post("/table", tableController.createTable);
 router.get("/table", tableController.getAllTable);
 router.get("/table/type", tableController.getTableType);
-
+router.post("/table/type", tableController.createTableType);
 
 module.exports = router;
