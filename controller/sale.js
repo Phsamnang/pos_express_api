@@ -128,7 +128,7 @@ exports.getSaleById = async (req, res) => {
         name: item.menu.name,
       };
     });
-    return res.status(200).json({ saleItemResponse, totalAmount });
+    return res.status(200).json({ saleItemResponse, totalAmount, invoice: sale.referenceId,saleDate: sale.saleDate });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: "Failed to get sale" });
