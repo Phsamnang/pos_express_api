@@ -86,7 +86,7 @@ exports.getAllMenusWithPrice = async (req, res) => {
             price: price.price,
             tableType: price.table_type.id,
           })),
-          img: menu.img,
+          image: menu.img,
         };
       })
     );
