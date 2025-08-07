@@ -79,14 +79,11 @@ exports.getProductsByCategoryId = async (req, res) => {
 
 exports.getAllProduct = async (req, res) => {
   try {
-    const products = await Product.findAll({
-      include: Category,
-    });
+    const products = await Product.findAll();
     const customRespone = products.map((p) => ({
       id: p.id,
       name: p.name,
-      price: p.price,
-      categoryName: p.Category.name,
+      price: p.price
     }));
 
     res.status(200).json(customRespone);

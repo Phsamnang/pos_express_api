@@ -8,12 +8,12 @@ const ImportDetail = database.define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      field: "item_id",
+      field: "imp_dtl_id",
     },
     importId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "bill_id", // Foreign key linking to the Import table
+      field: "imp_id", // Foreign key linking to the Import table
       references: {
         model: "Import", // Name of the Import model
         key: "importId", // Primary key of the Import model
@@ -21,9 +21,9 @@ const ImportDetail = database.define(
       onUpdate: "CASCADE",
       onDelete: "CASCADE",
     },
-    itemNumber: {
-      type: DataTypes.INTEGER,
-      field: "item_number",
+    productName: {
+      type: DataTypes.STRING,
+      field: "prod_name",
     },
     description: {
       type: DataTypes.STRING(255),
@@ -53,10 +53,6 @@ const ImportDetail = database.define(
       type: DataTypes.STRING(20),
       field: "payment_status",
     },
-    notes: {
-      type: DataTypes.TEXT,
-      field: "notes",
-    },
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
@@ -69,7 +65,7 @@ const ImportDetail = database.define(
     },
   },
   {
-    tableName: "bill_items",
+    tableName: "import_detail",
     timestamps: true,
     underscored: true,
   }

@@ -8,62 +8,40 @@ const Import = database.define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      field: "bill_id",
+      field: "id",
     },
-    billDate: {
-      type: DataTypes.DATE,
+    importDate: {
+      type: DataTypes.DATEONLY,
       allowNull: false,
-      field: "bill_date",
+      field: "imp_dt",
     },
     totalAmountUsd: {
       type: DataTypes.DECIMAL(10, 2),
-      field: "total_amount_usd",
     },
     totalAmountRiel: {
       type: DataTypes.DECIMAL(15, 0),
-      field: "total_amount_riel",
     },
     totalPaidUsd: {
       type: DataTypes.DECIMAL(10, 2),
-      field: "total_paid_usd",
     },
     totalPaidRiel: {
       type: DataTypes.DECIMAL(15, 0),
-      field: "total_paid_riel",
     },
     totalDueUsd: {
       type: DataTypes.DECIMAL(10, 2),
-      field: "total_due_usd",
     },
     totalDueRiel: {
       type: DataTypes.DECIMAL(15, 0),
-      field: "total_due_riel",
-    },
-    currency: {
-      type: DataTypes.STRING(10),
-      field: "currency",
-    },
-    paymentStatus: {
-      type: DataTypes.STRING(20),
-      field: "payment_status",
-    },
-    receiptNumber: {
-      type: DataTypes.STRING(50),
-      field: "receipt_number",
     },
     createdAt: {
       type: DataTypes.DATE,
-      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
-      field: "created_at",
     },
     updatedAt: {
       type: DataTypes.DATE,
-      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
-      field: "updated_at",
     },
   },
   {
-    tableName: "bills",
+    tableName: "import",
     timestamps: true,
     underscored: true,
   }

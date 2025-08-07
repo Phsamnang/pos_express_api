@@ -13,6 +13,7 @@ const menuRouter = require("./router/menu");
 const imageRouter = require("./router/image");
 const chefRouter = require("./router/chef");
 const deliveryRouter = require("./router/delivery");
+const importRouter = require("./router/import");
 const cors = require("cors");
 const authenticate = require("./middleware/authenticate");
 const swaggerJSDoc = require("swagger-jsdoc");
@@ -50,7 +51,7 @@ app.use("/api/v1", menuRouter);
 app.use("/api/v1", imageRouter);
 app.use("/api/v1", chefRouter);
 app.use("/api/v1", deliveryRouter);
-
+app.use("/api/v1", importRouter);
 
 const swaggerOptions = {
   definition: {

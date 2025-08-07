@@ -14,9 +14,6 @@ const SaleItem = require("./saleItem");
 const Table = require("./table");
 const TableType = require("./tabletype");
 const User = require("./user");
-
-Category.hasMany(Product, { foreignKey: "categoryId" });
-Product.belongsTo(Category, { foreignKey: "categoryId" });
 Table.hasMany(Sale, { foreignKey: "tableId" });
 Sale.belongsTo(Table, { foreignKey: "tableId" });
 Sale.hasMany(SaleItem, { foreignKey: "saleId" });
@@ -39,8 +36,8 @@ User.hasMany(Attendance, { foreignKey: "emp_id" }),
 Laon.belongsTo(User, { foreignKey: "emp_id" });
 User.hasOne(EmployeeInfo, { foreignKey: "emp_id", as: "emp_infos" });
 EmployeeInfo.belongsTo(User, { foreignKey: "emp_id", as: "user" });
-ImportDetail.belongsTo(Import, { foreignKey: "bill_id" });
-Import.hasMany(ImportDetail, { foreignKey: "bill_id" });
+ImportDetail.belongsTo(Import, { foreignKey: "imp_id" });
+Import.hasMany(ImportDetail, { foreignKey: "imp_id" });
 module.exports = {
   Category,
   Product,

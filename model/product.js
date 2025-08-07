@@ -13,13 +13,9 @@ const Product = database.define("Product", {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
   },
-  categoryId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: "Categories",
-      key: "id",
-    },
+  currency: {
+    type: DataTypes.STRING,
+    defaultValue: "USD",
   },
 });
 
