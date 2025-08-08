@@ -52,10 +52,19 @@ exports.getImportByDate = async (req, res) => {
       payment_status: detail.paymentStatus,
       currency: detail.currency,
     }));
-
-    return res
-      .status(200)
-      .json({ importRecord, importDetail: importDetailFormatted ?? [] });
+    const importRecordPlain = importRecord.get({ plain: true });
+    return res.status(200).json({
+      importRecord: {
+        ...importRecordPlain,
+        totalRemainingRiel:
+          parseFloat(importRecord.totalAmountRiel || 0) -
+          parseFloat(importRecord.totalPaidRiel || 0),
+        totalRemainingUsd:
+          parseFloat(importRecord.totalAmountUsd || 0) -
+          parseFloat(importRecord.totalPaidUsd || 0),
+      },
+      importDetail: importDetailFormatted ?? [],
+    });
   } catch (error) {
     console.error("Error fetching import by date:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -72,17 +81,17 @@ exports.updatePaymentStatus = async (req, res) => {
         .status(400)
         .json({ error: "Import Detail ID and payment status are required" });
     }
-    await ImportDetail.update({ paymentStatus }, { where: { importDetailId } , transaction: t });
+    await ImportDetail.update(
+      { paymentStatus },
+      { where: { importDetailId }, transaction: t }
+    );
     const details = await ImportDetail.findByPk(importDetailId, {
       transaction: t,
     });
 
-    const importRecord = await Import.findByPk(
-      details.importId,
-      {
-        transaction: t,
-      }
-    );
+    const importRecord = await Import.findByPk(details.importId, {
+      transaction: t,
+    });
     if (paymentStatus === "PAID") {
       importRecord.update({
         totalPaidUsd:
