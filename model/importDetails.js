@@ -53,6 +53,12 @@ const ImportDetail = database.define(
       type: DataTypes.STRING(20),
       field: "payment_status",
     },
+    currency: {
+      type: DataTypes.STRING(3),
+      allowNull: false,
+      defaultValue: "USD",
+      field: "currency", // Currency type, default is USD
+    },
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),

@@ -2,7 +2,7 @@ const { Product, Category } = require("../model/index");
 
 exports.createProduct = async (req, res) => {
   try {
-    const { name, description, price, categoryId } = req.body;
+    const { name, description, price } = req.body;
 
     // Check if a product with the same name already exists
     const existingProduct = await Product.findOne({ where: { name } });
@@ -17,7 +17,6 @@ exports.createProduct = async (req, res) => {
       name,
       description,
       price,
-      categoryId,
     });
     res.status(201).json(product);
   } catch (err) {
