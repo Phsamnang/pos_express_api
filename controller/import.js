@@ -125,7 +125,6 @@ exports.updatePaymentStatus = async (req, res) => {
 exports.createImportDetail = async (req, res) => {
   const { importId, name, qty, price, paymentStatus, currency } = req.body;
 
-  console.log("log body:", req.body);
 
   const t = await sequelize.transaction();
   try {
@@ -166,6 +165,7 @@ exports.createImportDetail = async (req, res) => {
 
     const importRecord = await Import.findByPk(importId, { transaction: t });
 
+
     await Import.update(
       {
         totalAmountUsd:
@@ -178,23 +178,39 @@ exports.createImportDetail = async (req, res) => {
           parseFloat(importRecord.totalAmountRiel || 0) +
           (currency === "KHR"
             ? parseFloat(newImportDetail.totalPriceRiel || 0)
-            : 0),
-        totalPaidUsd:
-          parseFloat(importRecord.totalPaidUsd || 0) +
-          (currency === "USD"
-            ? parseFloat(newImportDetail.totalPriceUsd || 0)
-            : 0),
-        totalPaidRiel:
-          parseFloat(importRecord.totalPaidRiel || 0) +
-          (currency === "KHR"
-            ? parseFloat(newImportDetail.totalPriceRiel || 0)
-            : 0),
+            : 0)
       },
       {
         where: { importId },
         transaction: t,
       }
     );
+
+    if (paymentStatus === "PAID") {
+
+    console.log("Updating total paid for import:", paymentStatus);
+      await Import.update(
+        {
+          totalPaidUsd:
+            parseFloat(importRecord.totalPaidUsd || 0) +
+            (currency === "USD"
+              ? parseFloat(newImportDetail.totalPriceUsd || 0)
+              : 0),
+          totalPaidRiel:
+            parseFloat(importRecord.totalPaidRiel || 0) +
+            (currency === "KHR"
+              ? parseFloat(newImportDetail.totalPriceRiel || 0)
+              : 0),
+        },
+        {
+          where: { importId },
+          transaction: t,
+        }
+      );
+
+    }
+
+
 
     await t.commit();
     return res.status(201).json(newImportDetail);
