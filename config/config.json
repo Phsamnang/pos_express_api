@@ -3,7 +3,7 @@
     "username": "nang",
     "password": "nang1234",
     "database": "sndrmanagement",
-    "host": "18.139.2.70",
+    "host": "3.0.179.123",
     "dialect": "postgres"
   },
   "test": {
