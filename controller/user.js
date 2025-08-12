@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs"); // Import bcrypt
 const jwt = require("jsonwebtoken");
 const employeeInfo = require("../models/employeeInfo");
 const EmployeeInfo = require("../model/employeeInfor");
+const { Roles } = require("../model");
 require("dotenv").config();
 exports.register = async (req, res) => {
   try {
@@ -50,22 +51,24 @@ exports.login = async (req, res) => {
         error: "Invalid email or password",
       });
     }
-
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       return res.status(401).json({ error: "Password is incorrect!" });
     }
-
     // Generate JWT token
     const token = jwt.sign(
       { userId: user.id, name: user.name },
       process.env.JWT_SECRET
     );
 
-    res.status(200).json({ accessToken: token, id: user.id, name: user.name }); // Send the token in the response
+    return res.status(200).json({
+      accessToken: token,
+      id: user.id,
+      name: user.name
+    }); // Send the token in the response
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Unable to log in" });
+    return res.status(500).json({ error: "Unable to log in" });
   }
 };
 
