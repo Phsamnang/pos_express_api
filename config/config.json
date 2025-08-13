@@ -1,9 +1,9 @@
 {
   "development": {
     "username": "nang",
-    "password": "nang1234",
-    "database": "sndrmanagement",
-    "host": "3.0.179.123",
+    "password": "12345",
+    "database": "posmanagement",
+    "host": "54.254.13.51",
     "dialect": "postgres"
   },
   "test": {
