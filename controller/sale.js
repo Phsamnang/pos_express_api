@@ -152,6 +152,9 @@ exports.removeSaleItem = async (req, res) => {
       Number(saleItem.priceAtSale * saleItem.quantity);
     await sale.update({ totalAmount: totalAmount });
     await saleItem.destroy();
+      io.emit("foodOrdered", {
+        message: "Food item removed from order",
+      });
     return res.status(200).json({ message: "Sale item removed successfully" });
   } catch (err) {
     console.error(err);
