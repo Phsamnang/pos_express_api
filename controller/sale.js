@@ -152,7 +152,7 @@ exports.removeSaleItem = async (req, res) => {
       Number(saleItem.priceAtSale * saleItem.quantity);
     await sale.update({ totalAmount: totalAmount });
     await saleItem.destroy();
-     const io = req.app.get("io");
+    const io = req.app.get("io");
     io.emit("foodOrdered", {
       order_id: saleItem.id,
     });
