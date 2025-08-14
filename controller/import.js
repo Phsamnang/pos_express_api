@@ -209,9 +209,6 @@ exports.createImportDetail = async (req, res) => {
       );
 
     }
-
-
-
     await t.commit();
     return res.status(201).json(newImportDetail);
   } catch (error) {
