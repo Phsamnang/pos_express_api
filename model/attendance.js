@@ -8,10 +8,6 @@ const Attendance = database.define(
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: User,
-        key: "id",
-      },
       field: "emp_id",
     },
     timeIn: {
@@ -25,14 +21,17 @@ const Attendance = database.define(
     date: {
       type: DataTypes.DATEONLY,
       allowNull: false,
+      field: "date",
     },
     status: {
       type: DataTypes.ENUM("Present", "Absent", "Late", "Early Leave"),
       defaultValue: "Present",
+      field: "sts",
     },
   },
   {
     underscored: true,
+    tableName: "tb_attendance",
   }
 );
 

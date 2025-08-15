@@ -3,7 +3,7 @@ const database = require("../config/database");
 const Roles = require("./roles");
 
 const User = database.define(
-  "User",
+  "tb_user",
   {
     username: {
       type: DataTypes.STRING,
@@ -24,10 +24,6 @@ const User = database.define(
     parentId: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      references: {
-        model: "User",
-        key: "id",
-      },
       field: "p_id",
     },
     roleId: {
@@ -42,6 +38,7 @@ const User = database.define(
   },
   {
     underscored: false,
+    name:'tb_user'
   }
 );
 (async () => {

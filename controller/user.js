@@ -1,11 +1,13 @@
 const User = require("../model/user");
 const bcrypt = require("bcryptjs"); // Import bcrypt
 const jwt = require("jsonwebtoken");
-const employeeInfo = require("../models/employeeInfo");
-const EmployeeInfo = require("../model/employeeInfor");
-const { Roles } = require("../model");
+const { Roles, EmployeeInfo } = require("../model");
+const { createResponse } = require("../utils/responseApi");
+const { sequelize } = require("../models");
+
 require("dotenv").config();
 exports.register = async (req, res) => {
+  const transaction = await sequelize.transaction();
   try {
     const { username, password, name } = req.body;
     // Check if user already exists
@@ -19,7 +21,7 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
     // Create the new user
     const newUser = await User.create({
-      username,
+      username: username.toLowerCase(),
       password: hashedPassword,
       name,
     });
@@ -31,12 +33,20 @@ exports.register = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res
-      .status(201)
-      .json({ accessToken: token, id: newUser.id, name: newUser.name }); // Send the token in the response
+    await transaction.commit();
+
+    const response = createResponse(true, "User registered successfully", {
+      accessToken: token,
+      id: newUser.id,
+      name: newUser.name,
+    });
+
+    return res.status(201).json(response);
   } catch (err) {
-    console.error(err); // Log the error for debugging
-    res.status(500).json({ error: "Unable to register user" });
+    console.error(err); 
+    await transaction.rollback();
+    // Log the error for debugging
+    return res.status(500).json(createResponse(false, "Unable to register user"));
   }
 };
 
@@ -45,7 +55,7 @@ exports.login = async (req, res) => {
     const { username, password } = req.body;
 
     // Find the user by email
-    const user = await User.findOne({ where: { username } });
+    const user = await User.findOne({ where: { username: username.toLowerCase() } });
     if (!user) {
       return res.status(401).json({
         error: "Invalid email or password",
@@ -53,7 +63,7 @@ exports.login = async (req, res) => {
     }
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ error: "Password is incorrect!" });
+      return res.status(401).json(createResponse(false, "Password is incorrect!"));
     }
     // Generate JWT token
     const token = jwt.sign(
@@ -61,14 +71,14 @@ exports.login = async (req, res) => {
       process.env.JWT_SECRET
     );
 
-    return res.status(200).json({
+    return res.status(200).json(createResponse(true, "Login successful", {
       accessToken: token,
       id: user.id,
       name: user.name
-    }); // Send the token in the response
+    }));
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Unable to log in" });
+    return res.status(500).json(createResponse(false, "Unable to log in"));
   }
 };
 
@@ -82,7 +92,7 @@ exports.createEmployee = async (req, res) => {
     if (!token) {
       return res
         .status(401)
-        .json({ error: "Access denied. No token provided." });
+        .json(createResponse(false, "Access denied. No token provided."));
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

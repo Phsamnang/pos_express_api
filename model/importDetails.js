@@ -14,10 +14,6 @@ const ImportDetail = database.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "imp_id", // Foreign key linking to the Import table
-      references: {
-        model: "Import", // Name of the Import model
-        key: "importId", // Primary key of the Import model
-      },
       onUpdate: "CASCADE",
       onDelete: "CASCADE",
     },
@@ -31,7 +27,7 @@ const ImportDetail = database.define(
     },
     quantity: {
       type: DataTypes.DECIMAL(10, 2),
-      field: "quantity",
+      field: "qty",
     },
     unitPriceUsd: {
       type: DataTypes.DECIMAL(10, 2),
@@ -71,7 +67,7 @@ const ImportDetail = database.define(
     },
   },
   {
-    tableName: "import_detail",
+    tableName: "tb_import_detail",
     timestamps: true,
     underscored: true,
   }

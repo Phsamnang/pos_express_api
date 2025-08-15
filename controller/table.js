@@ -1,4 +1,5 @@
 const { Table, TableType } = require("../model/index");
+const { createResponse } = require("../utils/responseApi");
 exports.createTable = async (req, res) => {
   try {
     const { name,typeId } = req.body;
@@ -46,10 +47,10 @@ exports.getAllTable = async (req, res) => {
       })
     );
 
-    return res.status(200).json(response);
+    return res.status(200).json(createResponse(true, "Tables fetched successfully", response));
   } catch (err) {
     console.error("Error fetching tables:", err);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json(createResponse(false, "Internal server error"));
   }
 };
 

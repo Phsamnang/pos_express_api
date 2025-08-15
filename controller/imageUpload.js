@@ -1,4 +1,5 @@
 const imagekit = require("../config/imagekit");
+const { createResponse } = require("../utils/responseApi");
 
 exports.uploadImage = async (req, res) => {
   if (!req.file) {
@@ -15,16 +16,13 @@ exports.uploadImage = async (req, res) => {
       useUniqueFileName: true, // Optional: specify a folder in ImageKit
     });
 
-    return res.status(200).json({
-      success: true,
-      message: "Image uploaded successfully.",
-      data: {
-        url: response.url,
-        fileId: response.fileId,
-      },
-    });
+    return res.status(200).json(createResponse(true, "Image uploaded successfully", {
+      url: response.url,
+      fileId: response.fileId,
+    }));    
+   
   } catch (error) {
     console.error("Error uploading image:", error);
-    res.status(500).json({ error: "Failed to upload image" });
+   return res.status(500).json(createResponse(false, "Failed to upload image"));
   }
 };

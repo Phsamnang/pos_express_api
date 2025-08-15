@@ -7,10 +7,6 @@ const Laon = database.define(
   {
     userId: {
       type: DataTypes.INTEGER,
-      references: {
-        model: User,
-        key: "id",
-      },
       field: "emp_id",
     },
     amount: {
@@ -21,10 +17,11 @@ const Laon = database.define(
     loadDate: {
       type: DataTypes.DATEONLY,
       allowNull: false,
-      field: "laon_date",
+      field: "laon_dt",
     },
   },
   {
+    tableName: "tb_loan",
     underscored: true,
   }
 );

@@ -1,6 +1,7 @@
 const { Op } = require("sequelize");
 const { SaleItem, Menus } = require("../model");
 const { getTableName } = require("./chef");
+const { createResponse } = require("../utils/responseApi");
 
 exports. getDeliveryOrders = async (req, res, next) => {
   try {
@@ -26,12 +27,12 @@ exports. getDeliveryOrders = async (req, res, next) => {
         delivery_sts: food.delivery_sts,
       }))
     );
-    return res.status(200).json(foodOrders);
+    return res.status(200).json(createResponse(true, "Fetched delivery orders successfully", foodOrders));
   } catch (error) {
     console.log("====================================");
     console.log("Error fetching delivery orders:", error);
     console.log("====================================");
-    return res.status(500).json({ message: "Errors get items", error });
+    return res.status(500).json(createResponse(false, "Errors get items", error));
   }
 };
 
@@ -45,7 +46,7 @@ exports.updateDeliveryStatus = async (req, res, next) => {
 
     // Validate input
     if (!id || !status) {
-      return res.status(400).json({ message: "ID and status are required" });
+      return res.status(400).json(createResponse(false, "ID and status are required"));
     }
 
     // Check if the status is valid
@@ -58,7 +59,7 @@ exports.updateDeliveryStatus = async (req, res, next) => {
       "returned",
     ];
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ message: "Invalid status" });
+      return res.status(400).json(createResponse(false, "Invalid status"));
     }
 
     // Update the delivery status
@@ -72,18 +73,18 @@ exports.updateDeliveryStatus = async (req, res, next) => {
     );
 
     if (updatedItem[0] === 0) {
-      return res.status(404).json({ message: "Sale item not found" });
+      return res.status(404).json(createResponse(false, "Sale item not found"));
     }
 
     return res
       .status(200)
-      .json({ message: "Delivery status updated successfully" });
+      .json(createResponse(true, "Delivery status updated successfully"));
   } catch (error) {
     console.log("====================================");
     console.log("Error updating delivery status:", error);
     console.log("====================================");
     return res
       .status(500)
-      .json({ message: "Error updating delivery status", error });
+      .json(createResponse(false, "Error updating delivery status", error));
   }
 };

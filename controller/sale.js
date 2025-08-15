@@ -9,6 +9,7 @@ const {
 } = require("../model/index");
 const { DateTime } = require("luxon");
 const database = require("../config/database");
+const { createResponse } = require("../utils/responseApi");
 
 exports.createSale = async (req, res) => {
   try {
@@ -31,10 +32,10 @@ exports.createSale = async (req, res) => {
       return newSale;
     });
     await table.update({ status: "occupied" });
-    res.status(201).json(newCreate);
+    res.status(201).json(createResponse(true, "Sale created successfully", newCreate));
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to create sale" });
+    return res.status(500).json(createResponse(false, "Failed to create sale"));
   }
 };
 
@@ -82,11 +83,11 @@ exports.orderFood = async (req, res) => {
       });
     }
 
-    return res.status(201).json(saleIteme);
+    return res.status(201).json(createResponse(true, "Food ordered successfully", saleIteme));
   } catch (err) {
     console.log(err);
 
-    return res.status(500).json({ error: "Failed to order food" });
+    return res.status(500).json(createResponse(false, "Failed to order food"));
   }
 };
 
@@ -96,7 +97,7 @@ exports.getByTableId = async (req, res) => {
     const sales = await Sale.findOne({
       where: { tableId, paymentMethod: "unpaid" },
     });
-    return res.status(200).json(sales);
+    return res.status(200).json(createResponse(true, "Sales fetched successfully", sales));
   } catch (err) {
     console.log(err);
   }
@@ -128,10 +129,10 @@ exports.getSaleById = async (req, res) => {
         name: item.menu.name,
       };
     });
-    return res.status(200).json({ saleItemResponse, totalAmount, invoice: sale.referenceId,saleDate: sale.saleDate });
+    return res.status(200).json(createResponse(true, "Sale fetched successfully", { saleItemResponse, totalAmount, invoice: sale.referenceId, saleDate: sale.saleDate }));
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: "Failed to get sale" });
+    return res.status(500).json(createResponse(false, "Failed to get sale"));
   }
 };
 
@@ -144,7 +145,7 @@ exports.removeSaleItem = async (req, res) => {
     }
     const sale = await Sale.findByPk(saleItem.saleId);
     if (!sale) {
-      return res.status(404).json({ error: "Sale not found" });
+      return res.status(404).json(createResponse(false, "Sale not found"));
     }
 
     const totalAmount =
@@ -156,10 +157,10 @@ exports.removeSaleItem = async (req, res) => {
     io.emit("foodOrdered", {
       order_id: saleItem.id,
     });
-    return res.status(200).json({ message: "Sale item removed successfully" });
+    return res.status(200).json(createResponse(true, "Sale item removed successfully"));
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Failed to remove sale item" });
+    return res.status(500).json(createResponse(false, "Failed to remove sale item"));
   }
 };
 
@@ -182,10 +183,10 @@ exports.salePayment = async (req, res) => {
     
     return res
       .status(200)
-      .json({ message: "Payment method updated successfully" });
+      .json(createResponse(true, "Payment method updated successfully"));
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Failed to update payment method" });
+    return res.status(500).json(createResponse(false, "Failed to update payment method"));
   }
 };
 
@@ -196,7 +197,7 @@ exports.getSaleByDate = async (req, res) => {
     if (!startDate || !endDate) {
       return res
         .status(400)
-        .json({ error: "startDate and endDate are required" });
+        .json(createResponse(false, "startDate and endDate are required"));
     }
 
     // --- Start of Fix ---
@@ -240,9 +241,9 @@ exports.getSaleByDate = async (req, res) => {
       ),
       sales: response,
     };
-    return res.status(200).json(mainResponse);
+    return res.status(200).json(createResponse(true, "Sales retrieved successfully", mainResponse));
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Failed to retrieve sales by date" });
+    return res.status(500).json(createResponse(false, "Failed to retrieve sales by date"));
   }
 };

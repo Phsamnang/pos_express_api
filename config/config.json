@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "nang",
-    "password": "12345",
-    "database": "posmanagement",
-    "host": "54.254.13.51",
+    "username": "postgres",
+    "password": "1234",
+    "database": "express",
+    "host": "localhost",
     "dialect": "postgres"
   },
   "test": {

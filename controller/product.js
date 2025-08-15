@@ -18,10 +18,10 @@ exports.createProduct = async (req, res) => {
       description,
       price,
     });
-    res.status(201).json(product);
+    res.status(201).json(createResponse(true, "Product created successfully", product));
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to create product" });
+    res.status(500).json(createResponse(false, "Failed to create product"));
   }
 };
 exports.getProductById = async (req, res) => {
@@ -36,12 +36,12 @@ exports.getProductById = async (req, res) => {
     });
 
     if (!product) {
-      return res.status(404).json({ error: "Product not found" });
+      return res.status(404).json(createResponse(false, "Product not found"));
     }
 
-    res.json(product);
+    return res.json(createResponse(true, "Product retrieved successfully", product));
   } catch (err) {
-    res.status(500).json({ error: "Unable to retrieve product" });
+    return res.status(500).json(createResponse(false, "Unable to retrieve product"));
   }
 };
 
@@ -69,10 +69,10 @@ exports.getProductsByCategoryId = async (req, res) => {
       include: Category,
     });
 
-    res.status(200).json(products);
+    res.status(200).json(createResponse(true, "Products retrieved successfully", products));
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Unable to retrieve products by category" });
+    res.status(500).json(createResponse(false, "Unable to retrieve products by category"));
   }
 };
 
@@ -85,8 +85,8 @@ exports.getAllProduct = async (req, res) => {
       price: p.price
     }));
 
-    res.status(200).json(customRespone);
+   return res.status(200).json(createResponse(true, "Products retrieved successfully", customRespone));
   } catch (err) {
-    res.status(500).json(err);
+    return res.status(500).json(createResponse(false, "Failed to retrieve products"));
   }
 };

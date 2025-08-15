@@ -1,6 +1,7 @@
 const Laon = require("../model/loan");
 const { Op } = require("sequelize");
 const User = require("../model/user");
+const { createResponse } = require("../utils/responseApi");
 exports.createLoan = async (req, res) => {
   try {
     const { userId, amount } = req.body;
@@ -12,10 +13,10 @@ exports.createLoan = async (req, res) => {
       amount,
       loadDate: currentDate,
     });
-    res.status(201).json({ message: "Loan created successfully" });
+    res.status(201).json(createResponse(true, "Loan created successfully", loan));
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to create loan" });
+    res.status(500).json(createResponse(false, "Failed to create loan"));
   }
 };
 
@@ -39,23 +40,17 @@ exports.getLoanByUserIdAndDateBetween = async (req, res) => {
     });
 
     if (loans.length == 0) {
-      return res.status(404).json({
-        status: 404,
-        message: "Loan is not found!",
-      });
+      return res.status(404).json(createResponse(false, "Loan is not found!"));
     }
-    return res.status(200).json({
+    return res.status(200).json(createResponse(true, "Loans retrieved successfully", {
       name: user.name,
       loans: loans.map((l) => ({
         amt: l.amount,
-        laon_date: l.loadDate,
+        loan_date: l.loadDate,
       })),
-    });
+    }));
   } catch (error) {
     console.log(error, "error");
-    return res.status(500).json({
-      status: 500,
-      message: "Failed to get loans",
-    });
+    return res.status(500).json(createResponse(false, "Failed to get loans"));
   }
 };

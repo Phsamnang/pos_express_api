@@ -1,10 +1,9 @@
-const employeeInfo = require("../models/employeeInfo");
 const Attendance = require("./attendance");
 const Category = require("./category");
-const EmployeeInfo = require("./employeeInfor");
+const EmployeeInfo = require("./employeeInfo");
 const Import = require("./import");
 const ImportDetail = require("./importDetails");
-const Laon = require("./loan");
+const Loan = require("./loan");
 const MenusPrice = require("./menuprice");
 const Menus = require("./menus");
 const Product = require("./product");
@@ -14,30 +13,43 @@ const SaleItem = require("./saleItem");
 const Table = require("./table");
 const TableType = require("./tabletype");
 const User = require("./user");
+
+// Associations
 Table.hasMany(Sale, { foreignKey: "tableId" });
 Sale.belongsTo(Table, { foreignKey: "tableId" });
-Sale.hasMany(SaleItem, { foreignKey: "saleId" });
-SaleItem.belongsTo(Sale, { foreignKey: "saleId" });
+
+Sale.hasMany(SaleItem, { foreignKey: "saleId",as : "saleItems" });
+SaleItem.belongsTo(Sale, { foreignKey: "saleId",as : "sale" });
+
 Menus.hasMany(SaleItem, { foreignKey: "menusId" });
-SaleItem.belongsTo(Menus, { foreignKey: "menusId" });
-TableType.hasMany(Table, { foreignKey: "table_type_id" });
-TableType.hasMany(MenusPrice, { foreignKey: "table_type_id" });
-Table.belongsTo(TableType, { foreignKey: "table_type_id" });
-MenusPrice.belongsTo(TableType, { foreignKey: "table_type_id" });
-Menus.hasMany(MenusPrice, { foreignKey: "menus_id" });
-MenusPrice.belongsTo(Menus, { foreignKey: "menus_id" });
-User.belongsTo(Roles, { foreignKey: "role_id" });
-Roles.hasMany(User, { foreignKey: "role_id" });
-User.belongsTo(User, { as: "Parent", foreignKey: "p_id" });
-User.hasMany(User, { as: "Children", foreignKey: "p_id" });
-Attendance.belongsTo(User, { foreignKey: "emp_id" });
-User.hasMany(Attendance, { foreignKey: "emp_id" }),
-  User.hasMany(Laon, { foreignKey: "emp_id" });
-Laon.belongsTo(User, { foreignKey: "emp_id" });
-User.hasOne(EmployeeInfo, { foreignKey: "emp_id", as: "emp_infos" });
-EmployeeInfo.belongsTo(User, { foreignKey: "emp_id", as: "user" });
-ImportDetail.belongsTo(Import, { foreignKey: "imp_id" });
-Import.hasMany(ImportDetail, { foreignKey: "imp_id" });
+SaleItem.belongsTo(Menus, { foreignKey: "menusId",as : "menus" });
+
+TableType.hasMany(Table, { foreignKey: "tableTypeId",as : "tables" });
+TableType.hasMany(MenusPrice, { foreignKey: "tableTypeId" });
+Table.belongsTo(TableType, { foreignKey: "tableTypeId" });
+MenusPrice.belongsTo(TableType, { foreignKey: "tableTypeId" });
+
+Menus.hasMany(MenusPrice, { foreignKey: "menusId",as : "prices"});
+MenusPrice.belongsTo(Menus, { foreignKey: "menusId",as : "menu" });
+
+User.belongsTo(Roles, { foreignKey: "roleId" });
+Roles.hasMany(User, { foreignKey: "roleId" });
+
+User.belongsTo(User, { as: "Parent", foreignKey: "parentId" });
+User.hasMany(User, { as: "Children", foreignKey: "parentId" });
+
+Attendance.belongsTo(User, { foreignKey: "userId" });
+User.hasMany(Attendance, { foreignKey: "userId",as : "attendances" });
+
+User.hasMany(Loan, { foreignKey: "userId" ,as : "loans"});
+Loan.belongsTo(User, { foreignKey: "userId" });
+
+User.hasOne(EmployeeInfo, { foreignKey: "userId", as: "tb_employee_info" });
+EmployeeInfo.belongsTo(User, { foreignKey: "userId", as: "tb_user" });
+
+ImportDetail.belongsTo(Import, { foreignKey: "importId" });
+Import.hasMany(ImportDetail, { foreignKey: "importId" });
+
 module.exports = {
   Category,
   Product,
@@ -49,4 +61,9 @@ module.exports = {
   Menus,
   Attendance,
   Roles,
+  User,
+  Loan,
+  EmployeeInfo,
+  Import,
+  ImportDetail,
 };

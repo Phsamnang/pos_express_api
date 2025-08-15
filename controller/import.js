@@ -3,13 +3,14 @@ const { Product } = require("../model");
 const Import = require("../model/import");
 const ImportDetail = require("../model/importDetails");
 const { Sequelize, sequelize } = require("../models");
+const { createResponse } = require("../utils/responseApi");
 
 exports.createImport = async (req, res) => {
   const { importDate } = req.body;
   try {
     // Validate request body
     if (!importDate) {
-      return res.status(400).json({ error: "Import date is required" });
+      return res.status(400).json(createResponse(false, "Import date is required"));
     }
     // Create a new import record
     const newImport = await Import.create({
@@ -23,10 +24,10 @@ exports.createImport = async (req, res) => {
     });
 
     // Respond with the created import record
-    return res.status(201).json(newImport);
+    return res.status(201).json(createResponse(true, "Import created successfully", newImport));
   } catch (error) {
     console.error("Error creating import:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json(createResponse(false, "Internal server error"));
   }
 };
 
@@ -67,7 +68,7 @@ exports.getImportByDate = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching import by date:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json(createResponse(false, "Internal server error"));
   }
 };
 
@@ -79,7 +80,7 @@ exports.updatePaymentStatus = async (req, res) => {
     if (!importDetailId || !paymentStatus) {
       return res
         .status(400)
-        .json({ error: "Import Detail ID and payment status are required" });
+        .json(createResponse(false, "Import Detail ID and payment status are required"));
     }
     await ImportDetail.update(
       { paymentStatus },
@@ -114,11 +115,11 @@ exports.updatePaymentStatus = async (req, res) => {
     t.commit();
     return res
       .status(200)
-      .json({ message: "Payment status updated successfully" });
+      .json(createResponse(true, "Payment status updated successfully"));
   } catch (error) {
     t.rollback();
     console.error("Error updating payment status:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json(createResponse(false, "Internal server error"));
   }
 };
 
@@ -187,8 +188,6 @@ exports.createImportDetail = async (req, res) => {
     );
 
     if (paymentStatus === "PAID") {
-
-    console.log("Updating total paid for import:", paymentStatus);
       await Import.update(
         {
           totalPaidUsd:
@@ -210,10 +209,10 @@ exports.createImportDetail = async (req, res) => {
 
     }
     await t.commit();
-    return res.status(201).json(newImportDetail);
+    return res.status(201).json(createResponse(true, "Import detail created successfully", newImportDetail));
   } catch (error) {
     console.error("Error creating import detail:", error);
     await t.rollback();
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json(createResponse(false, "Internal server error"));
   }
 };

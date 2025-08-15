@@ -12,10 +12,12 @@ const Table = database.define("Table", {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
+    field: "table_name",
   },
   status: {
     type: DataTypes.ENUM("available", "occupied", "reserved"),
     defaultValue: "available",
+    field: "sts"
   },
   tableTypeId: {
     type: DataTypes.INTEGER,
@@ -26,6 +28,10 @@ const Table = database.define("Table", {
     },
     field: "table_type_id",
   },
+},{
+  tableName: "tb_table",
+  timestamps: true,
+  underscored: true,
 });
 
 module.exports = Table;

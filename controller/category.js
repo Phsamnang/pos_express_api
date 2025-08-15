@@ -1,4 +1,5 @@
 const Category = require("../model/category");
+const { createResponse } = require("../utils/responseApi");
 
 exports.createCategory = async (req, res) => {
   try {
@@ -10,23 +11,23 @@ exports.createCategory = async (req, res) => {
     if (existingCategory) {
       return res
         .status(400)
-        .json({ error: "Category with this name already exists" });
+        .json(createResponse(false, "Category with this name already exists"));
     }
 
     const category = await Category.create({ name });
-    res.status(201).json(category);
+    res.status(201).json(createResponse(true, "Category created successfully", category));
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to create category" });
+   return res.status(500).json(createResponse(false, "Failed to create category"));
   }
 };
 
 exports.getAllCategories = async (req, res) => {
   try {
     const category = await Category.findAll();
-    res.status(200).json(category);
+    return res.status(200).json(createResponse(true, "Fetched categories successfully", category));
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Unable to create product" });
+    return res.status(500).json(createResponse(false, "Unable to fetch categories"));
   }
 };

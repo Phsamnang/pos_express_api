@@ -14,29 +14,31 @@ const Sale = database.define(
     referenceId: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true, // Ensure no two sales have the same reference
+      unique: true,
+      field: 'ref_id' // Ensure no two sales have the same reference
     },
     tableId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: Table,
-        key: "id",
-      },
+      field: "table_id",
     },
     saleDate: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
+      field: "sale_dt",
     },
     totalAmount: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
+      field: "total_amt",
     },
     paymentMethod: {
       type: DataTypes.STRING,
+      field: "payment_method",
     },
   },
   {
+    tableName: "tb_sale",
     // Add the hook logic here
     hooks: {
       beforeValidate: async (sale, options) => {

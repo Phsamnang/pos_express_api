@@ -1,5 +1,6 @@
 const imagekit = require("../config/imagekit");
 const { Menus, MenusPrice, TableType, Category, Table } = require("../model");
+const { createResponse } = require("../utils/responseApi");
 
 exports.createMenu = async (req, res) => {
   const { name, categoryId,isCooked } = req.body;
@@ -54,10 +55,10 @@ exports.getAllMenus = async (req, res) => {
       })
     );
     const responseWithPrice = response.filter((menu) => menu.price !== null);
-    return res.status(200).json(responseWithPrice);
+    return res.status(200).json(createResponse(true, "Menus fetched successfully", responseWithPrice));
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Failed to fetch menus" });
+    return res.status(500).json(createResponse(false, "Failed to fetch menus"));
   }
 };
 
@@ -91,10 +92,10 @@ exports.getAllMenusWithPrice = async (req, res) => {
       })
     );
 
-    return res.status(200).json(response);
+    return res.status(200).json(createResponse(true, "Menus fetched successfully", response));
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Failed to fetch menus with price" });
+    return res.status(500).json(createResponse(false, "Failed to fetch menus with price"));
   }
 };
 
@@ -105,7 +106,7 @@ exports.updateMenuPrice = async (req, res) => {
     // Check if the menu exists
     const menu = await Menus.findByPk(menuId);
     if (!menu) {
-      return res.status(404).json({ error: "Menu not found" });
+      return res.status(404).json(createResponse(false, "Menu not found"));
     }
 
     // Check if the price entry already exists
@@ -119,7 +120,7 @@ exports.updateMenuPrice = async (req, res) => {
       await existingPrice.save();
       return res
         .status(200)
-        .json({ message: "Menu price updated successfully" });
+        .json(createResponse(true, "Menu price updated successfully"));
     } else {
       await MenusPrice.create({
         menus_id: menuId,
@@ -128,11 +129,11 @@ exports.updateMenuPrice = async (req, res) => {
       });
       return res
         .status(201)
-        .json({ message: "Menu price created successfully" });
+        .json(createResponse(true, "Menu price created successfully"));
     }
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Failed to update menu price" });
+    return res.status(500).json(createResponse(false, "Failed to update menu price"));
   }
 };
 exports.updateMenuImage = async (req, res) => {
@@ -141,13 +142,13 @@ exports.updateMenuImage = async (req, res) => {
     const file = req.file; // Assuming you're using multer for file uploads
 
     if (!file) {
-      return res.status(400).json({ error: "No image file provided" });
+      return res.status(400).json(createResponse(false, "No image file provided"));
     }
 
     // Check if the menu exists
     const menu = await Menus.findByPk(menuId);
     if (!menu) {
-      return res.status(404).json({ error: "Menu not found" });
+      return res.status(404).json(createResponse(false, "Menu not found"));
     }
 
     // Upload the image to ImageKit
@@ -161,12 +162,11 @@ exports.updateMenuImage = async (req, res) => {
     menu.img = response.url;
     await menu.save();
 
-    return res.status(200).json({
-      message: "Menu image updated successfully",
+    return res.status(200).json(createResponse(true, "Menu image updated successfully", {
       imgUrl: response.url,
-    });
+    }));
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Failed to update menu image" });
+    return res.status(500).json(createResponse(false, "Failed to update menu image"));
   }
 };

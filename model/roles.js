@@ -18,6 +18,7 @@ const Roles = database.define(
   },
   {
     underscored: true,
+    tableName:'tb_role'
   }
 );
 

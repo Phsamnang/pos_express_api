@@ -35,6 +35,7 @@ const MenusPrice = database.define(
   },
   {
     underscored: true,
+    tableName: "tb_menus_price",
   }
 );
 

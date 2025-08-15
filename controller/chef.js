@@ -1,6 +1,7 @@
 const { Op, where } = require("sequelize");
 const { SaleItem, Menus, Sale, Table } = require("../model");
 const e = require("express");
+const { createResponse } = require("../utils/responseApi");
 
 exports.getFoodOrder = async (req, res, next) => {
   try {
@@ -29,10 +30,10 @@ exports.getFoodOrder = async (req, res, next) => {
         table_name: await getTableName(food.saleId),
       }))
     );
-    return res.status(200).json(foodOrders);
+    return res.status(200).json(createResponse(true, "Fetched food orders successfully", foodOrders));
   } catch (error) {
     console.error("Error fetching food orders:", error);
-    res.status(500).json({ error: "Internal server error" });
+   return res.status(500).json(createResponse(false, "Internal server error"));
     next(error); // Pass the error to the next middleware for centralized error handling
   }
 };
@@ -67,13 +68,13 @@ exports.updateDeliveryStatus = async (req, res) => {
       }
       return res
         .status(200)
-        .json({ message: "Delivery status updated successfully" });
+        .json(createResponse(true, "Delivery status updated successfully"));
     }
 
-    return res.status(404).json({ error: "Order not found" });
+    return res.status(404).json(createResponse(false, "Order not found"));
   } catch (error) {
     console.error("Error updating delivery status:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json(createResponse(false, "Internal server error"));
   }
 };
 

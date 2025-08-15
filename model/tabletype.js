@@ -9,7 +9,11 @@ const TableType = database.define("table_type", {
   },
   name: {
     type: DataTypes.STRING,
+    field: "name",
   },
+},{
+  tableName: "tb_table_type",
+  underscored: true,
 });
 
 module.exports = TableType;
