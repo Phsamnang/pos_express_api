@@ -30,7 +30,7 @@ Table.belongsTo(TableType, { foreignKey: "tableTypeId" });
 MenusPrice.belongsTo(TableType, { foreignKey: "tableTypeId" });
 
 Menus.hasMany(MenusPrice, { foreignKey: "menusId",as : "prices"});
-MenusPrice.belongsTo(Menus, { foreignKey: "menusId",as : "menu" });
+MenusPrice.belongsTo(Menus, { foreignKey: "menusId",as : "menus" });
 
 User.belongsTo(Roles, { foreignKey: "roleId" });
 Roles.hasMany(User, { foreignKey: "roleId" });

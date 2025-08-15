@@ -61,10 +61,10 @@ exports.getTableType = async (req, res) => {
       id: tableType.id,
       name: tableType.name,
     }));
-    return res.status(200).json(response);
+    return res.status(200).json(createResponse(true, "Table types fetched successfully", response));
   } catch (err) {
     console.error("Error fetching table types:", err);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json(createResponse(false, "Internal server error"));
   }
 };
 
@@ -79,9 +79,9 @@ exports.createTableType = async (req, res) => {
         .json({ error: "Table type with this name already exists" });
     }
     const tableType = await TableType.create({ name });
-    res.status(201).json(tableType);
+    res.status(201).json(createResponse(true, "Table type created successfully", tableType));
   } catch (err) {
     console.error("Error creating table type:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json(createResponse(false, "Internal server error"));
   }
 };

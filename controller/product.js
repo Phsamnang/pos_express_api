@@ -1,4 +1,5 @@
 const { Product, Category } = require("../model/index");
+const { createResponse } = require("../utils/responseApi");
 
 exports.createProduct = async (req, res) => {
   try {

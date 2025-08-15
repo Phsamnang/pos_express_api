@@ -68,6 +68,7 @@ exports.getAllMenusWithPrice = async (req, res) => {
       include: [
         {
           model: MenusPrice,
+          as: "prices",
           include: [
             {
               model: TableType,
@@ -83,7 +84,7 @@ exports.getAllMenusWithPrice = async (req, res) => {
           id: menu.id,
           name: menu.name,
           category: category.name,
-          prices: menu.menus_prices.map((price) => ({
+          prices: menu.prices.map((price) => ({
             price: price.price,
             tableType: price.table_type.id,
           })),
