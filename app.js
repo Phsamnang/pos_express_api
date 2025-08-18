@@ -21,6 +21,7 @@ const swaggerUi = require("swagger-ui-express");
 require("dotenv").config();
 
 const { User, Menus, Sale, SaleItem, Table } = require("./models");
+const responseTime = require("response-time");
 
 const app = express();
 const server = http.createServer(app);
@@ -40,6 +41,13 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use(authenticate);
+
+app.use(
+  responseTime((req, res, time) => {
+    console.log(`${req.method} ${req.url} - ${time.toFixed(2)} ms`);
+    res.set("X-Response-Time", `${time.toFixed(2)} ms`);
+  })
+);
 
 app.use("/api/v1", categoryRouter);
 app.use("/api/v1", productRouter);
