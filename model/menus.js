@@ -28,6 +28,10 @@ const Menus = database.define(
     img: {
       type: DataTypes.STRING,
     },
+    cookTime: {
+      type: DataTypes.INTEGER,
+      field: "cook_time",
+    },
   },
   {
     underscored: true,

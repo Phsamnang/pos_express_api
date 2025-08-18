@@ -89,6 +89,7 @@ exports.getAllMenusWithPrice = async (req, res) => {
             tableType: price.table_type.id,
           })),
           image: menu.img,
+          preparationTime: menu.cookTime,
         };
       })
     );
@@ -112,7 +113,7 @@ exports.updateMenuPrice = async (req, res) => {
 
     // Check if the price entry already exists
     const existingPrice = await MenusPrice.findOne({
-      where: { menus_id: menuId, table_type_id: tableTypeId },
+      where: { menusId: menuId, tableTypeId: tableTypeId },
     });
 
     if (existingPrice) {
@@ -124,8 +125,8 @@ exports.updateMenuPrice = async (req, res) => {
         .json(createResponse(true, "Menu price updated successfully"));
     } else {
       await MenusPrice.create({
-        menus_id: menuId,
-        table_type_id: tableTypeId,
+        menusId: menuId,
+        tableTypeId,
         price,
       });
       return res

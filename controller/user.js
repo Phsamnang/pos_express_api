@@ -70,12 +70,15 @@ exports.login = async (req, res) => {
       { userId: user.id, name: user.name },
       process.env.JWT_SECRET
     );
+   
 
-    return res.status(200).json(createResponse(true, "Login successful", {
+    const response = createResponse(true, "Login successful", {
       accessToken: token,
       id: user.id,
       name: user.name
-    }));
+    });
+    console.log("User logged in:", response);
+    return res.status(200).json(response);
   } catch (err) {
     console.error(err);
     return res.status(500).json(createResponse(false, "Unable to log in"));
