@@ -34,8 +34,8 @@ exports.getAllMenus = async (req, res) => {
         try {
           const price = await MenusPrice.findOne({
             where: {
-              menus_id: menu.id,
-              table_type_id: tableType.table_type_id,
+              menusId: menu.id,
+              tableTypeId: tableType.tableTypeId,
             },
           }).then((price) => {
             return price ? price.price : null;

@@ -111,7 +111,7 @@ exports.getSaleById = async (req, res) => {
       include: [
         {
           model: Menus,
-          attributes: ["id", "name"],
+          as: 'menus'
         },
       ],
     });
@@ -126,7 +126,7 @@ exports.getSaleById = async (req, res) => {
         id: item.id,
         quantity: item.quantity,
         priceAtSale: item.priceAtSale,
-        name: item.menu.name,
+        name: item.menus.name,
       };
     });
     return res.status(200).json(createResponse(true, "Sale fetched successfully", { saleItemResponse, totalAmount, invoice: sale.referenceId, saleDate: sale.saleDate }));
