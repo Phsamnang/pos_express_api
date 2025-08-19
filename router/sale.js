@@ -10,5 +10,6 @@ router.delete("/sale/:saleItemId/item", saleController.removeSaleItem);
 router.post("/sale/payment", saleController.salePayment);
 router.get("/sale", saleController.getSaleByDate);
 router.get("/sale/:saleId/printers", saleController.getPrinter);
+router.put("/sale/:saleId/finish", saleController.finishOrder);
 
 module.exports = router;

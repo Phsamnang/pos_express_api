@@ -36,6 +36,12 @@ const Sale = database.define(
       type: DataTypes.STRING,
       field: "payment_method",
     },
+    paidAmount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0.00,
+      field: "paid_amt",
+    },
   },
   {
     tableName: "tb_sale",

@@ -32,7 +32,9 @@ exports.createSale = async (req, res) => {
       return newSale;
     });
     await table.update({ status: "occupied" });
-    res.status(201).json(createResponse(true, "Sale created successfully", newCreate));
+    res
+      .status(201)
+      .json(createResponse(true, "Sale created successfully", newCreate));
   } catch (err) {
     console.error(err);
     return res.status(500).json(createResponse(false, "Failed to create sale"));
@@ -83,7 +85,9 @@ exports.orderFood = async (req, res) => {
       });
     }
 
-    return res.status(201).json(createResponse(true, "Food ordered successfully", saleIteme));
+    return res
+      .status(201)
+      .json(createResponse(true, "Food ordered successfully", saleIteme));
   } catch (err) {
     console.log(err);
 
@@ -97,7 +101,9 @@ exports.getByTableId = async (req, res) => {
     const sales = await Sale.findOne({
       where: { tableId, paymentMethod: "unpaid" },
     });
-    return res.status(200).json(createResponse(true, "Sales fetched successfully", sales));
+    return res
+      .status(200)
+      .json(createResponse(true, "Sales fetched successfully", sales));
   } catch (err) {
     console.log(err);
   }
@@ -111,7 +117,7 @@ exports.getSaleById = async (req, res) => {
       include: [
         {
           model: Menus,
-          as: 'menus'
+          as: "menus",
         },
       ],
       order: [["id", "ASC"]],
@@ -130,7 +136,17 @@ exports.getSaleById = async (req, res) => {
         name: item.menus.name,
       };
     });
-    return res.status(200).json(createResponse(true, "Sale fetched successfully", { saleItemResponse, totalAmount, invoice: sale.referenceId, saleDate: sale.saleDate }));
+    return res
+      .status(200)
+      .json(
+        createResponse(true, "Sale fetched successfully", {
+          saleItemResponse,
+          totalAmount,
+          paidAmount: sale.paidAmount,
+          invoice: sale.referenceId,
+          saleDate: sale.saleDate,
+        })
+      );
   } catch (err) {
     console.log(err);
     return res.status(500).json(createResponse(false, "Failed to get sale"));
@@ -158,10 +174,14 @@ exports.removeSaleItem = async (req, res) => {
     io.emit("foodOrdered", {
       order_id: saleItem.id,
     });
-    return res.status(200).json(createResponse(true, "Sale item removed successfully"));
+    return res
+      .status(200)
+      .json(createResponse(true, "Sale item removed successfully"));
   } catch (err) {
     console.error(err);
-    return res.status(500).json(createResponse(false, "Failed to remove sale item"));
+    return res
+      .status(500)
+      .json(createResponse(false, "Failed to remove sale item"));
   }
 };
 
@@ -172,22 +192,22 @@ exports.salePayment = async (req, res) => {
     if (!sale) {
       return res.status(404).json({ error: "Sale not found" });
     }
-    await sale.update({ paymentMethod: paymentMethod });
+    await sale.update({
+      paymentMethod: paymentMethod,
+      paidAmount: sale.totalAmount,
+    });
     await SaleItem.update(
-        { delivery_sts: "delivered" },
-        { where: { saleId: saleId } }
-      );
-    await Table.update(
-      { status: "available" },
-      { where: { id: sale.tableId } }
+      { delivery_sts: "delivered" },
+      { where: { saleId: saleId } }
     );
-    
     return res
       .status(200)
       .json(createResponse(true, "Payment method updated successfully"));
   } catch (err) {
     console.error(err);
-    return res.status(500).json(createResponse(false, "Failed to update payment method"));
+    return res
+      .status(500)
+      .json(createResponse(false, "Failed to update payment method"));
   }
 };
 
@@ -212,6 +232,9 @@ exports.getSaleByDate = async (req, res) => {
         saleDate: {
           [Op.between]: [start, end],
         },
+      totalAmount:{
+        [Op.ne]: 0
+      }
       },
       include: [
         {
@@ -242,10 +265,14 @@ exports.getSaleByDate = async (req, res) => {
       ),
       sales: response,
     };
-    return res.status(200).json(createResponse(true, "Sales retrieved successfully", mainResponse));
+    return res
+      .status(200)
+      .json(createResponse(true, "Sales retrieved successfully", mainResponse));
   } catch (err) {
     console.error(err);
-    return res.status(500).json(createResponse(false, "Failed to retrieve sales by date"));
+    return res
+      .status(500)
+      .json(createResponse(false, "Failed to retrieve sales by date"));
   }
 };
 
@@ -293,5 +320,36 @@ exports.getPrinter = async (req, res) => {
   } catch (err) {
     console.error("Error fetching printers:", err);
     return res.status(500).json(createResponse(false, "Internal server error"));
+  }
+};
+
+exports.finishOrder = async (req, res) => {
+  const { saleId } = req.params;
+
+  try {
+    // Check if the sale exists
+    const sale = await Sale.findByPk(saleId);
+    if(sale.paymentMethod === "unpaid") {
+       sale.paymentMethod = "paid";
+      sale.save();
+    }
+    if (!sale) {
+      return res.status(404).json(createResponse(false, "Sale not found"));
+    }
+
+    // Update the sale status to finished
+    await Table.update(
+      { status: "available" },
+      { where: { id: sale.tableId } }
+    );
+
+    return res
+      .status(200)
+      .json(createResponse(true, "Order finished successfully"));
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json(createResponse(false, "Failed to finish order"));
   }
 };
