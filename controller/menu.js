@@ -174,3 +174,24 @@ exports.updateMenuImage = async (req, res) => {
     return res.status(500).json(createResponse(false, "Failed to update menu image"));
   }
 };
+
+exports.updateDefaultOrder = async (req, res) => {
+  const { menuId, defaultOrder } = req.body;
+
+  try {
+    // Check if the menu exists
+    const menu = await Menus.findByPk(menuId);
+    if (!menu) {
+      return res.status(404).json(createResponse(false, "Menu not found"));
+    }
+
+    // Update the default order
+    menu.defaultOrder = defaultOrder;
+    await menu.save();
+
+    return res.status(200).json(createResponse(true, "Menu default order updated successfully"));
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(createResponse(false, "Failed to update menu default order"));
+  }
+};
