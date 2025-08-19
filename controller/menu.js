@@ -3,7 +3,7 @@ const { Menus, MenusPrice, TableType, Category, Table } = require("../model");
 const { createResponse } = require("../utils/responseApi");
 
 exports.createMenu = async (req, res) => {
-  const { name, categoryId,isCooked } = req.body;
+  const { name, categoryId,isCooked,defaultOrder } = req.body;
   try {
     // Check if a menu with the same name already exists
     const existingMenu = await Menus.findOne({ where: { name } });
@@ -14,7 +14,7 @@ exports.createMenu = async (req, res) => {
         .json({ error: "Menu with this name already exists" });
     }
 
-    const menu = await Menus.create({ name, categoryId,isCooked });
+    const menu = await Menus.create({ name, categoryId,isCooked,defaultOrder });
     res.status(201).json(menu);
   } catch (err) {
     console.error(err);
@@ -48,6 +48,7 @@ exports.getAllMenus = async (req, res) => {
               where: { id: menu.categoryId },
             }).then((category) => category?.name || null),
             img: menu.img || null,
+            defaultOrder: menu.defaultOrder || null,
           };
         } catch (err) {
           return err;
@@ -90,6 +91,7 @@ exports.getAllMenusWithPrice = async (req, res) => {
           })),
           image: menu.img,
           preparationTime: menu.cookTime,
+          defaultOrder: menu.defaultOrder,
         };
       })
     );

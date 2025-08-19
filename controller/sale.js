@@ -114,6 +114,7 @@ exports.getSaleById = async (req, res) => {
           as: 'menus'
         },
       ],
+      order: [["id", "ASC"]],
     });
 
     if (!saleItem) {
@@ -245,5 +246,52 @@ exports.getSaleByDate = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json(createResponse(false, "Failed to retrieve sales by date"));
+  }
+};
+
+exports.getPrinter = async (req, res) => {
+  try {
+    const saleId = req.params.saleId;
+    const printers = await Sale.findByPk(saleId);
+    const table = await Table.findByPk(printers.tableId);
+    const query = `
+      select 
+          m.name as name,
+          sum(si.quantity) as qty,
+          mp.price as sale_at_price,
+          m.img as img
+      from tb_sale s
+          left join tb_sale_item si on s.id = si.sale_id
+          left join tb_menus m on si.menus_id = m.id
+          left join tb_table t on s.table_id = t.id
+          left join tb_table_type tbt on t.table_type_id = tbt.id
+          left join tb_menus_price mp 
+              on (m.id, tbt.id) = (mp.menus_id, mp.table_type_id)
+      where s.id = :saleId
+      group by (s.ref_id, t.id, mp.price, m.name, t.table_name, m.img)
+    `;
+
+    const results = await database.query(query, {
+      replacements: { saleId }, // safely injects variable
+      type: database.QueryTypes.SELECT, // only rows, no metadata
+    });
+
+    const response = {
+      inv_no: printers.referenceId,
+      ttl_amt: printers.totalAmount,
+      table_name: table.tableName,
+      sale_dt: printers.saleDate,
+      items: results,
+    };
+
+    if (!results) {
+      return res.status(404).json(createResponse(false, "Printers not found"));
+    }
+    return res
+      .status(200)
+      .json(createResponse(true, "Printers fetched successfully", response));
+  } catch (err) {
+    console.error("Error fetching printers:", err);
+    return res.status(500).json(createResponse(false, "Internal server error"));
   }
 };

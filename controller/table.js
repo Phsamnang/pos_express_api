@@ -1,4 +1,5 @@
-const { Table, TableType } = require("../model/index");
+const database = require("../config/database");
+const { Table, TableType, Sale } = require("../model/index");
 const { createResponse } = require("../utils/responseApi");
 exports.createTable = async (req, res) => {
   try {
@@ -85,3 +86,4 @@ exports.createTableType = async (req, res) => {
     res.status(500).json(createResponse(false, "Internal server error"));
   }
 };
+

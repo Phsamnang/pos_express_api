@@ -32,6 +32,11 @@ const Menus = database.define(
       type: DataTypes.INTEGER,
       field: "cook_time",
     },
+    defaultOrder: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+      field: "default_order",
+    },
   },
   {
     underscored: true,
