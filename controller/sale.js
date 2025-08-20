@@ -1,15 +1,10 @@
 const { NUMBER, Op } = require("sequelize");
-const {
-  Sale,
-  Table,
-  SaleItem,
-  Product,
-  MenusPrice,
-  Menus,
-} = require("../model/index");
+const { Sale, Table, SaleItem, MenusPrice, Menus } = require("../model/index");
 const { DateTime } = require("luxon");
 const database = require("../config/database");
 const { createResponse } = require("../utils/responseApi");
+const stockUsing = require("../model/stockusing");
+const stock = require("../model/stock");
 
 exports.createSale = async (req, res) => {
   try {
@@ -42,12 +37,32 @@ exports.createSale = async (req, res) => {
 };
 
 exports.orderFood = async (req, res) => {
+  const t = await database.transaction();
   try {
     const { saleId, menusId, qty, tableId } = req.body;
     // const table=await Table.findByPk(tableId);
     const sale = await Sale.findByPk(saleId);
     const table = await Table.findByPk(tableId);
     const menus = await Menus.findByPk(menusId);
+    const using = await stockUsing.findOne({
+      where: {
+        menuId: menusId,
+      },
+    });
+    const stockData = await stock.findOne({
+      where: {
+        productId: using.productId,
+      },
+    });
+    const amountUse = using.amountUsing * qty;
+    if (amountUse > stockData.quantity) {
+      return res
+        .status(400)
+        .json(createResponse(false, "Not enough stock available"));
+    }
+
+    stockData.quantity -= parseFloat(amountUse);
+    await stockData.save();
 
     const isCooked = menus.isCooked;
 
@@ -59,9 +74,6 @@ exports.orderFood = async (req, res) => {
     });
     const total = qty * menusPrice.price;
 
-    console.log("====================================");
-    console.log("total", total);
-    console.log("====================================");
     await sale.update({
       totalAmount: Number(sale.totalAmount) + Number(total),
     });
@@ -84,13 +96,13 @@ exports.orderFood = async (req, res) => {
         message: "Delivery status updated successfully",
       });
     }
-
+    t.commit();
     return res
       .status(201)
       .json(createResponse(true, "Food ordered successfully", saleIteme));
   } catch (err) {
+    t.rollback();
     console.log(err);
-
     return res.status(500).json(createResponse(false, "Failed to order food"));
   }
 };
@@ -136,17 +148,15 @@ exports.getSaleById = async (req, res) => {
         name: item.menus.name,
       };
     });
-    return res
-      .status(200)
-      .json(
-        createResponse(true, "Sale fetched successfully", {
-          saleItemResponse,
-          totalAmount,
-          paidAmount: sale.paidAmount,
-          invoice: sale.referenceId,
-          saleDate: sale.saleDate,
-        })
-      );
+    return res.status(200).json(
+      createResponse(true, "Sale fetched successfully", {
+        saleItemResponse,
+        totalAmount,
+        paidAmount: sale.paidAmount,
+        invoice: sale.referenceId,
+        saleDate: sale.saleDate,
+      })
+    );
   } catch (err) {
     console.log(err);
     return res.status(500).json(createResponse(false, "Failed to get sale"));
@@ -157,6 +167,16 @@ exports.removeSaleItem = async (req, res) => {
   try {
     const { saleItemId } = req.params;
     const saleItem = await SaleItem.findByPk(saleItemId);
+
+    const query = `UPDATE tb_stock
+SET qty = qty + :qty
+WHERE prod_id IN (
+  SELECT prod_id
+  FROM tb_stock_using
+  WHERE menu_id = :menuId
+);
+        `;
+
     if (!saleItem) {
       return res.status(404).json({ error: "Sale item not found" });
     }
@@ -169,6 +189,13 @@ exports.removeSaleItem = async (req, res) => {
       Number(sale.totalAmount) -
       Number(saleItem.priceAtSale * saleItem.quantity);
     await sale.update({ totalAmount: totalAmount });
+    await database.query(query, {
+      replacements: {
+        qty: saleItem.quantity,
+        menuId: saleItem.menusId,
+      },
+      type: database.QueryTypes.UPDATE,
+    });
     await saleItem.destroy();
     const io = req.app.get("io");
     io.emit("foodOrdered", {
@@ -232,9 +259,9 @@ exports.getSaleByDate = async (req, res) => {
         saleDate: {
           [Op.between]: [start, end],
         },
-      totalAmount:{
-        [Op.ne]: 0
-      }
+        totalAmount: {
+          [Op.ne]: 0,
+        },
       },
       include: [
         {
@@ -329,8 +356,8 @@ exports.finishOrder = async (req, res) => {
   try {
     // Check if the sale exists
     const sale = await Sale.findByPk(saleId);
-    if(sale.paymentMethod === "unpaid") {
-       sale.paymentMethod = "paid";
+    if (sale.paymentMethod === "unpaid") {
+      sale.paymentMethod = "paid";
       sale.save();
     }
     if (!sale) {

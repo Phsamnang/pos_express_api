@@ -20,7 +20,7 @@ exports.createTable = async (req, res) => {
 exports.getAllTable = async (req, res) => {
   try {
     const tables = await Table.findAll({
-      order: [["tableTypeId", "ASC"]],
+      order: [["tableName", "ASC"]],
     });
 
     const response = await Promise.all(
@@ -80,10 +80,11 @@ exports.createTableType = async (req, res) => {
         .json({ error: "Table type with this name already exists" });
     }
     const tableType = await TableType.create({ name });
-    res.status(201).json(createResponse(true, "Table type created successfully", tableType));
+   return res.status(201).json(createResponse(true, "Table type created successfully", tableType));
   } catch (err) {
     console.error("Error creating table type:", err);
-    res.status(500).json(createResponse(false, "Internal server error"));
+   return res.status(500).json(createResponse(false, "Internal server error"));
   }
 };
 
+ 

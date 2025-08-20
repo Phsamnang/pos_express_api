@@ -4,13 +4,17 @@ const Import = require("../model/import");
 const ImportDetail = require("../model/importDetails");
 const { Sequelize, sequelize } = require("../models");
 const { createResponse } = require("../utils/responseApi");
+const e = require("cors");
+const stock = require("../model/stock");
 
 exports.createImport = async (req, res) => {
   const { importDate } = req.body;
   try {
     // Validate request body
     if (!importDate) {
-      return res.status(400).json(createResponse(false, "Import date is required"));
+      return res
+        .status(400)
+        .json(createResponse(false, "Import date is required"));
     }
     // Create a new import record
     const newImport = await Import.create({
@@ -24,7 +28,9 @@ exports.createImport = async (req, res) => {
     });
 
     // Respond with the created import record
-    return res.status(201).json(createResponse(true, "Import created successfully", newImport));
+    return res
+      .status(201)
+      .json(createResponse(true, "Import created successfully", newImport));
   } catch (error) {
     console.error("Error creating import:", error);
     return res.status(500).json(createResponse(false, "Internal server error"));
@@ -80,7 +86,12 @@ exports.updatePaymentStatus = async (req, res) => {
     if (!importDetailId || !paymentStatus) {
       return res
         .status(400)
-        .json(createResponse(false, "Import Detail ID and payment status are required"));
+        .json(
+          createResponse(
+            false,
+            "Import Detail ID and payment status are required"
+          )
+        );
     }
     await ImportDetail.update(
       { paymentStatus },
@@ -126,17 +137,16 @@ exports.updatePaymentStatus = async (req, res) => {
 exports.createImportDetail = async (req, res) => {
   const { importId, name, qty, price, paymentStatus, currency } = req.body;
 
-
   const t = await sequelize.transaction();
   try {
     // Validate request body
     if (!importId || !name || !qty || !price || !paymentStatus || !currency) {
       return res.status(400).json({ error: "All fields are required" });
     }
-
     const produsct = await Product.findOne({ where: { name } });
+     let pId=produsct ? produsct.id : null;
     if (!produsct) {
-      await Product.create(
+    const product = await Product.create(
         {
           name,
           description: "",
@@ -145,6 +155,25 @@ exports.createImportDetail = async (req, res) => {
         },
         { transaction: t }
       );
+      console.log("Product created:", product);
+      pId = product.id;
+    }
+
+    console.log("Stock data not found for product ID:", pId);
+
+    const stockData = await stock.findOne({ where: { productId: pId } });
+
+    if (!stockData) {
+      await stock.create(
+        {
+          productId: pId,
+          quantity: qty,
+        },
+        { transaction: t }
+      );
+    } else {
+      stockData.quantity = Number(stockData.quantity) + Number(qty);
+      await stockData.save({ transaction: t });
     }
 
     // Create a new import detail record
@@ -166,7 +195,6 @@ exports.createImportDetail = async (req, res) => {
 
     const importRecord = await Import.findByPk(importId, { transaction: t });
 
-
     await Import.update(
       {
         totalAmountUsd:
@@ -179,7 +207,7 @@ exports.createImportDetail = async (req, res) => {
           parseFloat(importRecord.totalAmountRiel || 0) +
           (currency === "KHR"
             ? parseFloat(newImportDetail.totalPriceRiel || 0)
-            : 0)
+            : 0),
       },
       {
         where: { importId },
@@ -206,13 +234,22 @@ exports.createImportDetail = async (req, res) => {
           transaction: t,
         }
       );
-
     }
     await t.commit();
-    return res.status(201).json(createResponse(true, "Import detail created successfully", newImportDetail));
+    return res
+      .status(201)
+      .json(
+        createResponse(
+          true,
+          "Import detail created successfully",
+          newImportDetail
+        )
+      );
   } catch (error) {
     console.error("Error creating import detail:", error);
     await t.rollback();
     return res.status(500).json(createResponse(false, "Internal server error"));
   }
 };
+
+
