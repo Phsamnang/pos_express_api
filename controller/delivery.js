@@ -12,14 +12,20 @@ exports. getDeliveryOrders = async (req, res, next) => {
       include: [
         {
           model: Menus,
+          as: "menus",
         },
       ],
       order: [["startOrderTime", "ASC"]],
     });
+
+    console.log("====================================");
+    console.log("Fetched delivery orders:", foods);
+
     const foodOrders = await Promise.all(
       foods.map(async (food) => ({
         id: food.id,
-        name: food.menu.name,
+        name: food.menus.name,
+        image: food.menus.img,
         qty: food.quantity,
         price: food.price,
         table_name: await getTableName(food.saleId),

@@ -12,6 +12,7 @@ exports.getFoodOrder = async (req, res, next) => {
       include: [
         {
           model: Menus,
+          as: "menus",
           where: {
             isCooked: true,
           },
@@ -23,7 +24,7 @@ exports.getFoodOrder = async (req, res, next) => {
     const foodOrders = await Promise.all(
       foods.map(async (food) => ({
         id: food.id,
-        food_name: food.menu.name,
+        food_name: food.menus.name,
         qty: food.quantity,
         start_time: food.startOrderTime,
         delivery_sts: food.delivery_sts,

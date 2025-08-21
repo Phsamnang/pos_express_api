@@ -13,7 +13,7 @@ const stock=database.define("Stock", {
         field:'prod_id'
     },
     quantity: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
         allowNull: false,
         field:'qty'
     },
