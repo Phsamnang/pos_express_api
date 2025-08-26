@@ -29,21 +29,20 @@ exports.getAllTable = async (req, res) => {
           const tableType = await TableType.findOne({
             where: { id: table.tableTypeId },
           });
+          const sale = await Sale.findOne({
+            where: { tableId: table.id, paymentMethod: "unpaid" },
+          });
           return {
             id: table.id,
             name: table.tableName,
             status: table.status,
             category: tableType ? tableType.name : null,
+            ttle_amount: sale ? sale.totalAmount : 0,
             createdAt: table.createdAt,
           };
         } catch (err) {
           console.error("Error fetching table type:", err);
-          return {
-            id: table.id,
-            name: table.tableName,
-            status: table.status,
-            category: null,
-          };
+        return res.status(500).json(createResponse(false, "Internal server error"));
         }
       })
     );
