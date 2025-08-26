@@ -52,9 +52,6 @@ WHERE stu.menu_id = :menuId;
           replacements: { menuId: menu.id },
           type: database.QueryTypes.SELECT,
         });
-
-        console.log("isEnoughStock:", isEnoughStock);
-
         if (isEnoughStock[0].is_enough_stock) {
           try {
             const price = await MenusPrice.findOne({
