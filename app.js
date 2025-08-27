@@ -20,7 +20,6 @@ const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 require("dotenv").config();
 
-const { User, Menus, Sale, SaleItem, Table } = require("./models");
 const responseTime = require("response-time");
 
 const app = express();
