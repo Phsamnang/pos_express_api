@@ -146,6 +146,7 @@ exports.getSaleById = async (req, res) => {
         quantity: item.quantity,
         priceAtSale: item.priceAtSale,
         name: item.menus.name,
+        delivery_sts: item.delivery_sts,
       };
     });
     return res.status(200).json(

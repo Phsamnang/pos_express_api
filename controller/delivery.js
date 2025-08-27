@@ -82,6 +82,12 @@ exports.updateDeliveryStatus = async (req, res, next) => {
       return res.status(404).json(createResponse(false, "Sale item not found"));
     }
 
+    const io = req.app.get("io");
+
+    io.emit("tellCustomer", {
+      message: "Your food is on the way!",
+    });
+
     return res
       .status(200)
       .json(createResponse(true, "Delivery status updated successfully"));

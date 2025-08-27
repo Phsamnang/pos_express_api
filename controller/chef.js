@@ -59,14 +59,18 @@ exports.updateDeliveryStatus = async (req, res) => {
     console.log("====================================");
     console.log(updated, " order updated");
     console.log("====================================");
-
+ const io = req.app.get("io");
     if (updated) {
       if (status == "shipped") {
-        const io = req.app.get("io");
         io.emit("foodDelivery", {
           message: "Delivery status updated successfully",
         });
       }
+
+      io.emit("tellCustomer", {
+        message: "Your food is on the way!",
+      });
+
       return res
         .status(200)
         .json(createResponse(true, "Delivery status updated successfully"));
