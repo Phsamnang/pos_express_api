@@ -1,12 +1,11 @@
 const { Sequelize } = require("sequelize");
-const {development} = require("./config.json");
-
-const th = development.database || "sndrmanagement";
-
-const database = new Sequelize(th,development.username, development.password, {
-  host: development.host || "localhost",
-  port: 5432,
+require("dotenv").config();
+const database = new Sequelize(process.env.DATABASE_URL, {
   dialect: "postgres",
+  protocol: "postgres",
+  dialectOptions: {
+    ssl: { require: true, rejectUnauthorized: false },
+  },
+  logging: false,
 });
-
 module.exports = database;

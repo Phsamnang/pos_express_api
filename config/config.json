@@ -1,10 +1,16 @@
 {
   "development": {
     "username": "postgres",
-    "password": "1234",
-    "database": "express",
-    "host": "localhost",
-    "dialect": "postgres"
+    "password": "S@mnang2025",
+    "database": "postgres",
+    "host": "db.kdpdnqkeibmfgrjqipjo.supabase.co",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
   },
   "test": {
     "username": "root",
